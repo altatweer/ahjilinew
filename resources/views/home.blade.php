@@ -191,6 +191,46 @@
             display: inline-block;
         }
         
+        /* Read More Link Styles */
+        .content-preview {
+            line-height: 1.6;
+            text-align: justify;
+            color: #4a5568;
+        }
+        
+        .read-more-section {
+            text-align: left;
+        }
+        
+        .read-more-link {
+            color: #5C7D99;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            background: rgba(92, 125, 153, 0.1);
+        }
+        
+        .read-more-link:hover {
+            color: #4A6A85;
+            background: rgba(92, 125, 153, 0.2);
+            transform: translateX(-2px);
+            text-decoration: none;
+        }
+        
+        .read-more-link i {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .read-more-link:hover i {
+            transform: translateX(-2px);
+        }
+        
         .add-post-btn {
             position: fixed;
             bottom: 2rem;

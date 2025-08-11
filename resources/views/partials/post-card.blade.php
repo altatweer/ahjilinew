@@ -42,7 +42,23 @@
     </div>
     
     <div class="post-content">
-        {{ $post->content }}
+        @php
+            $maxLength = 250; // حوالي 4-5 أسطر
+            $isLongContent = mb_strlen($post->content) > $maxLength;
+        @endphp
+        
+        <div class="content-preview">
+            {{ $isLongContent ? mb_substr($post->content, 0, $maxLength) . '...' : $post->content }}
+        </div>
+        
+        @if($isLongContent)
+            <div class="read-more-section mt-2">
+                <a href="{{ route('posts.show', $post) }}" class="read-more-link">
+                    <i class="bi bi-arrow-left-circle me-1"></i>
+                    قراءة المزيد
+                </a>
+            </div>
+        @endif
     </div>
     
     @if($post->image_url)
