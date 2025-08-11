@@ -1,0 +1,35 @@
+---
+deployment:
+  tasks:
+    # تثبيت Composer dependencies
+    - export COMPOSER_HOME=/tmp/composer
+    - /usr/local/bin/ea-php82 /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader --no-interaction
+    
+    # نسخ ملف البيئة إذا لم يكن موجود
+    - cp -n .env.example .env || true
+    
+    # توليد مفتاح التطبيق إذا لم يكن موجود
+    - /usr/local/bin/ea-php82 artisan key:generate --no-interaction --force
+    
+    # ربط مجلد التخزين
+    - /usr/local/bin/ea-php82 artisan storage:link --force
+    
+    # تشغيل migrations
+    - /usr/local/bin/ea-php82 artisan migrate --force --no-interaction
+    
+    # مسح وإعادة بناء cache
+    - /usr/local/bin/ea-php82 artisan config:clear
+    - /usr/local/bin/ea-php82 artisan route:clear
+    - /usr/local/bin/ea-php82 artisan view:clear
+    - /usr/local/bin/ea-php82 artisan cache:clear
+    
+    # تحسين للإنتاج
+    - /usr/local/bin/ea-php82 artisan config:cache
+    - /usr/local/bin/ea-php82 artisan route:cache
+    - /usr/local/bin/ea-php82 artisan view:cache
+    
+    # إعداد الصلاحيات
+    - find storage -type f -exec chmod 644 {} \;
+    - find storage -type d -exec chmod 755 {} \;
+    - find bootstrap/cache -type f -exec chmod 644 {} \;
+    - find bootstrap/cache -type d -exec chmod 755 {} \;
