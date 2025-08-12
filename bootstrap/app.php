@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Global middleware for all requests
         $middleware->web(append: [
             \App\Http\Middleware\ForceUtf8::class,
+            \App\Http\Middleware\UpdateLastSeen::class,
         ]);
         
         $middleware->alias([

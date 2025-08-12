@@ -28,6 +28,7 @@ class User extends Authenticatable
         'account_type',
         'role',
         'is_active',
+        'last_seen_at',
         'is_private',
         'last_active_at',
     ];
@@ -52,6 +53,7 @@ class User extends Authenticatable
             'is_active' => 'boolean',
             'is_private' => 'boolean',
             'last_active_at' => 'datetime',
+            'last_seen_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

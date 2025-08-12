@@ -73,7 +73,7 @@ class PostController extends Controller
             }
 
         $validated = $request->validate([
-            'content' => 'required|string|min:1|max:2000', // مبسط أكثر
+            'content' => 'required|string|min:10|max:2000', // 10 حروف حد أدنى منطقي
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB
             'type' => 'nullable|in:anonymous,community', // اختياري
             'category' => 'nullable|in:complaint,experience,recommendation,question,review,general', // اختياري
