@@ -285,15 +285,6 @@
             font-size: 0.8rem;
         }
         
-        /* Hashtags Styling */
-        .hashtag-badge {
-            background: transparent;
-            color: #6c757d;
-            font-size: 0.65rem;
-            font-weight: 400;
-            display: inline;
-        }
-        
         .footer {
             background: #2d3748;
             color: white;

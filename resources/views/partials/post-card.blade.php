@@ -111,26 +111,6 @@
             <span>منذ {{ $post->created_at->diffForHumans() }}</span>
         </div>
         
-        </div>
-        
-        <!-- Hashtags Display -->
-        @if($post->hashtags && trim($post->hashtags) !== '')
-        <div class="mt-1">
-            @php
-                $hashtags = array_filter(array_map('trim', explode(',', $post->hashtags)));
-                $displayHashtags = array_slice($hashtags, 0, 3); // أول 3 فقط
-            @endphp
-            @foreach($displayHashtags as $hashtag)
-                <small class="hashtag-badge me-1">
-                    #{{ ltrim($hashtag, '#') }}
-                </small>
-            @endforeach
-            @if(count($hashtags) > 3)
-                <small class="text-muted">+{{ count($hashtags) - 3 }}</small>
-            @endif
-        </div>
-        @endif
-        
         <div class="post-stats">
             <div class="stat-item">
                 <i class="bi bi-chat"></i>
