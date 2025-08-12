@@ -112,6 +112,8 @@
             <span>منذ {{ $post->created_at->diffForHumans() }}</span>
         </div>
         
+        </div>
+        
         <!-- Hashtags Display -->
         @if($post->hashtags && trim($post->hashtags) !== '')
         <div class="hashtags-container mt-2">
@@ -125,7 +127,6 @@
             @endforeach
         </div>
         @endif
-        </div>
         
         <div class="post-stats">
             <div class="stat-item">

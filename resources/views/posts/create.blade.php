@@ -402,6 +402,7 @@
                     
                     <!-- Hashtag Suggestions -->
                     <div class="hashtag-suggestions">
+                        <button type="button" class="hashtag-btn" onclick="addHashtag('مشكلة')">مشكلة</button>
                         <button type="button" class="hashtag-btn" onclick="addHashtag('نصب')">نصب</button>
                         <button type="button" class="hashtag-btn" onclick="addHashtag('احتيال')">احتيال</button>
                         <button type="button" class="hashtag-btn" onclick="addHashtag('توصية')">توصية</button>
