@@ -11,9 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Global middleware for all requests
+        $middleware->web(append: [
+            \App\Http\Middleware\ForceUtf8::class,
+        ]);
+        
         $middleware->alias([
             'spam.protection' => \App\Http\Middleware\SpamProtection::class,
             'admin.access' => \App\Http\Middleware\AdminAccess::class,
+            'utf8' => \App\Http\Middleware\ForceUtf8::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

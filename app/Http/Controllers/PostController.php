@@ -158,15 +158,17 @@ class PostController extends Controller
             'تم نشر المنشور بنجاح!' : 
             'تم إرسال المنشور للمراجعة وسيظهر بعد الموافقة عليه.';
 
-        return redirect()->route('home')
-            ->with('success', $message);
-            
+            return redirect()->route('home')
+                ->with('success', $message)
+                ->header('Content-Type', 'text/html; charset=UTF-8');
+                
         } catch (\Exception $e) {
             \Log::error('Post creation error: ' . $e->getMessage());
             
             return back()->withErrors([
                 'content' => 'حدث خطأ. حاول مرة أخرى'
-            ])->withInput();
+            ])->withInput()
+            ->header('Content-Type', 'text/html; charset=UTF-8');
         }
     }
 

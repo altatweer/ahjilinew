@@ -135,3 +135,11 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 });
+
+// Test form route
+Route::get('/test-form', function () {
+    return view('test-form');
+});
+
+// Simple test post route
+Route::post('/test-post', [App\Http\Controllers\TestController::class, 'createPost']);
