@@ -286,22 +286,12 @@
         }
         
         /* Hashtags Styling */
-        .hashtags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.2rem;
-            margin-top: 0.5rem;
-        }
-        
         .hashtag-badge {
-            background: #e8f4f8;
-            color: #5C7D99;
-            padding: 0.1rem 0.4rem;
-            border-radius: 8px;
-            font-size: 0.7rem;
+            background: transparent;
+            color: #6c757d;
+            font-size: 0.65rem;
             font-weight: 400;
-            border: 1px solid #d1e7dd;
-            display: inline-block;
+            display: inline;
         }
         
         .footer {

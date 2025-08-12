@@ -1,8 +1,11 @@
 @php
-    $postTypeClass = match($post->hashtags) {
-        default => str_contains($post->hashtags, 'نصب') || str_contains($post->hashtags, 'احتيال') ? 'warning' : 
-                   (str_contains($post->hashtags, 'توصية') || str_contains($post->hashtags, 'مطعم') ? 'recommendation' : 
-                   (str_contains($post->hashtags, 'تقنية') ? 'tech' : 'question'))
+    $postTypeClass = match($post->category) {
+        'complaint' => 'warning',
+        'experience' => 'question',
+        'recommendation' => 'recommendation',
+        'question' => 'question',
+        'review' => 'tech',
+        default => 'question'
     };
     
     $iconClass = match($postTypeClass) {
@@ -28,11 +31,7 @@
         <div class="flex-grow-1">
             <h3 class="post-title">
                 <a href="{{ route('posts.show', $post) }}" class="text-decoration-none text-dark">
-                    @if($post->hashtags)
-                        {{ Str::limit($post->content, 60) }}
-                    @else
-                        {{ Str::limit($post->content, 60) }}
-                    @endif
+                    {{ Str::limit($post->content, 60) }}
                 </a>
             </h3>
             @if($post->image_url)
@@ -116,15 +115,19 @@
         
         <!-- Hashtags Display -->
         @if($post->hashtags && trim($post->hashtags) !== '')
-        <div class="hashtags-container mt-2">
+        <div class="mt-1">
             @php
                 $hashtags = array_filter(array_map('trim', explode(',', $post->hashtags)));
+                $displayHashtags = array_slice($hashtags, 0, 3); // أول 3 فقط
             @endphp
-            @foreach($hashtags as $hashtag)
-                <span class="hashtag-badge me-1 mb-1 d-inline-block">
+            @foreach($displayHashtags as $hashtag)
+                <small class="hashtag-badge me-1">
                     #{{ ltrim($hashtag, '#') }}
-                </span>
+                </small>
             @endforeach
+            @if(count($hashtags) > 3)
+                <small class="text-muted">+{{ count($hashtags) - 3 }}</small>
+            @endif
         </div>
         @endif
         
