@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'spam.protection' => \App\Http\Middleware\SpamProtection::class,
+            'admin.access' => \App\Http\Middleware\AdminAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -73,7 +73,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
-                Authenticate::class,
+                'admin.access',
             ])
             ->databaseNotifications()
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
