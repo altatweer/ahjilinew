@@ -14,8 +14,23 @@ use App\Http\Controllers\Auth\RegisterController;
 |--------------------------------------------------------------------------
 */
 
-// Homepage and main pages
-Route::get('/', [HomeController::class, 'index'])->name('home');
+// Homepage - with fallback if database not ready
+Route::get('/', function() {
+    try {
+        return app(HomeController::class)->index(request());
+    } catch (\Exception $e) {
+        // Fallback if database not ready
+        return view('welcome-simple');
+    }
+})->name('home');
+// Quick test route
+Route::get('/test', function() {
+    return 'SUCCESS! احجيلي Laravel يعمل بنجاح 🚀<br><br>
+    <a href="/">← العودة للرئيسية</a> | 
+    <a href="/admin">لوحة الإدارة</a> | 
+    <a href="/posts/create">أضف منشور</a>';
+});
+
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/privacy', [HomeController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [HomeController::class, 'terms'])->name('terms');

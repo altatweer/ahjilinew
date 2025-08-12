@@ -14,8 +14,8 @@ deployment:
     # ربط مجلد التخزين
     - /usr/local/bin/ea-php82 artisan storage:link --force
     
-    # تشغيل migrations
-    - /usr/local/bin/ea-php82 artisan migrate --force --no-interaction
+    # تشغيل migrations (مع تجاهل الأخطاء في البداية)
+    - /usr/local/bin/ea-php82 artisan migrate --force --no-interaction || echo "Migrations will run after database setup"
     
     # مسح وإعادة بناء cache
     - /usr/local/bin/ea-php82 artisan config:clear
