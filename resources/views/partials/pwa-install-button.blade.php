@@ -132,8 +132,8 @@
                     
                     if (isIOS) {
                         iconElement.className = 'bi bi-plus-square';
-                        textElement.textContent = 'أضف';
-                        btnElement.title = 'أضف إلى الشاشة الرئيسية';
+                        textElement.textContent = 'ثبت';
+                        btnElement.title = 'ثبت تطبيق احجيلي للشاشة الرئيسية';
                     } else {
                         iconElement.className = 'bi bi-download';
                         textElement.textContent = 'ثبت';
@@ -339,12 +339,14 @@
                                 ${isIOS ? `
                                 <div class="alert alert-info" style="border-radius: 10px;">
                                     <strong>📱 طريقة سريعة لـ iOS:</strong><br>
-                                    اضغط <span class="badge bg-primary">⋯</span> في ${appName} ← اختر "فتح في Safari"
+                                    اضغط <span class="badge bg-primary">⋯</span> أو <span class="badge bg-primary">⬆️</span> في ${appName} ← اختر "فتح في Safari"<br>
+                                    <small>أو انسخ الرابط والصقه في Safari مباشرة</small>
                                 </div>
                                 ` : `
                                 <div class="alert alert-info" style="border-radius: 10px;">
                                     <strong>📱 طريقة سريعة لـ Android:</strong><br>
-                                    اضغط <span class="badge bg-primary">⋮</span> في ${appName} ← اختر "فتح في Chrome"
+                                    اضغط <span class="badge bg-primary">⋮</span> أو <span class="badge bg-primary">⋯</span> في ${appName} ← اختر "فتح في Chrome"<br>
+                                    <small>أو انسخ الرابط والصقه في Chrome مباشرة</small>
                                 </div>
                                 `}
                             </div>
@@ -380,39 +382,258 @@
         // فتح في Safari (iOS)
         window.openInSafari = function() {
             const currentUrl = window.location.href;
-            // محاولة فتح في Safari
-            window.location.href = currentUrl.replace(/^https?:\/\//, 'x-web-search://');
-            // fallback
-            setTimeout(() => {
+            
+            // نسخ الرابط فوراً
+            copyUrlToClipboard();
+            
+            // إظهار تعليمات واضحة للمستخدم
+            const instructionsModal = `
+                <div class="modal fade" id="safariInstructionsModal" tabindex="-1" style="z-index: 1060;">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="border-radius: 15px;">
+                            <div class="modal-header border-0 text-center">
+                                <div class="w-100">
+                                    <div style="font-size: 3rem; margin-bottom: 1rem;">🧭</div>
+                                    <h5 class="modal-title">فتح في Safari</h5>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-success text-center">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <strong>تم نسخ الرابط بنجاح!</strong>
+                                </div>
+                                
+                                <h6 class="mb-3 text-center">اتبع هذه الخطوات:</h6>
+                                
+                                <div class="step-by-step">
+                                    <div class="step mb-3 p-3" style="background: #f8f9fa; border-radius: 10px; border-left: 4px solid #007AFF;">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-primary rounded-pill me-2">1</span>
+                                            <strong>اضغط على زر المشاركة في Instagram</strong>
+                                        </div>
+                                        <small class="text-muted">الزر الذي يبدو مثل: <span style="font-size: 1.2em;">⬆️</span> أو <span style="font-size: 1.2em;">📤</span></small>
+                                    </div>
+                                    
+                                    <div class="step mb-3 p-3" style="background: #f8f9fa; border-radius: 10px; border-left: 4px solid #28A745;">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-success rounded-pill me-2">2</span>
+                                            <strong>اختر "فتح في Safari"</strong>
+                                        </div>
+                                        <small class="text-muted">أو "Copy Link" ثم افتح Safari واللصق</small>
+                                    </div>
+                                    
+                                    <div class="step mb-3 p-3" style="background: #f8f9fa; border-radius: 10px; border-left: 4px solid #FFC107;">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-warning rounded-pill me-2">3</span>
+                                            <strong>إذا لم تجد "فتح في Safari":</strong>
+                                        </div>
+                                        <small class="text-muted">افتح Safari → الصق الرابط المنسوخ → اضغط Enter</small>
+                                    </div>
+                                    
+                                    <div class="step p-3" style="background: #e7f3ff; border-radius: 10px; border-left: 4px solid #0066CC;">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-info rounded-pill me-2">4</span>
+                                            <strong>ثبت التطبيق من Safari</strong>
+                                        </div>
+                                        <small class="text-muted">اضغط زر "ثبت التطبيق" → سيعمل بنجاح! 🎉</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                    <button type="button" class="btn btn-primary" onclick="openSafariDirectly()">
+                                        <i class="bi bi-safari me-2"></i>جرب فتح Safari مباشرة
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // إزالة المودال السابق إن وجد
+            const existingModal = document.getElementById('safariInstructionsModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // إضافة المودال الجديد
+            document.body.insertAdjacentHTML('beforeend', instructionsModal);
+            
+            // إغلاق المودال السابق
+            const browserModal = bootstrap.Modal.getInstance(document.getElementById('openInBrowserModal'));
+            if (browserModal) {
+                browserModal.hide();
+            }
+            
+            // إظهار مودال التعليمات
+            const instructModal = new bootstrap.Modal(document.getElementById('safariInstructionsModal'));
+            instructModal.show();
+            
+            // إزالة المودال بعد الإغلاق
+            document.getElementById('safariInstructionsModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+            });
+        };
+        
+        // فتح Safari مباشرة (محاولة أخرى)
+        window.openSafariDirectly = function() {
+            const currentUrl = window.location.href;
+            
+            // محاولة عدة طرق لفتح Safari
+            const safariSchemes = [
+                currentUrl, // URL عادي
+                'safari://' + currentUrl.replace(/^https?:\/\//, ''), // Safari scheme
+                'https://safari.com' // fallback
+            ];
+            
+            // محاولة الطريقة الأولى
+            try {
+                window.open(currentUrl, '_blank');
+            } catch (e) {
                 copyUrlToClipboard();
-                alert('تم نسخ الرابط! الصق الرابط في Safari لتثبيت التطبيق');
-            }, 1000);
+                alert('الرجاء فتح Safari يدوياً والصق الرابط المنسوخ');
+            }
         };
         
         // فتح في Chrome
         window.openInChrome = function() {
             const currentUrl = window.location.href;
-            // محاولة فتح في Chrome
-            const chromeUrl = 'googlechrome://' + currentUrl.replace(/^https?:\/\//, '');
-            window.location.href = chromeUrl;
-            // fallback
-            setTimeout(() => {
+            
+            // نسخ الرابط فوراً
+            copyUrlToClipboard();
+            
+            // إظهار تعليمات Chrome
+            const chromeInstructionsModal = `
+                <div class="modal fade" id="chromeInstructionsModal" tabindex="-1" style="z-index: 1060;">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="border-radius: 15px;">
+                            <div class="modal-header border-0 text-center">
+                                <div class="w-100">
+                                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌐</div>
+                                    <h5 class="modal-title">فتح في Chrome</h5>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-success text-center">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <strong>تم نسخ الرابط بنجاح!</strong>
+                                </div>
+                                
+                                <h6 class="mb-3 text-center">اتبع هذه الخطوات:</h6>
+                                
+                                <div class="step-by-step">
+                                    <div class="step mb-3 p-3" style="background: #f8f9fa; border-radius: 10px; border-left: 4px solid #4285F4;">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-primary rounded-pill me-2">1</span>
+                                            <strong>اضغط على قائمة التطبيق (⋮ أو ⋯)</strong>
+                                        </div>
+                                        <small class="text-muted">عادة في الزاوية العلوية</small>
+                                    </div>
+                                    
+                                    <div class="step mb-3 p-3" style="background: #f8f9fa; border-radius: 10px; border-left: 4px solid #28A745;">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-success rounded-pill me-2">2</span>
+                                            <strong>اختر "فتح في Chrome" أو "Open in Chrome"</strong>
+                                        </div>
+                                        <small class="text-muted">أو "فتح في متصفح خارجي"</small>
+                                    </div>
+                                    
+                                    <div class="step mb-3 p-3" style="background: #f8f9fa; border-radius: 10px; border-left: 4px solid #FFC107;">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-warning rounded-pill me-2">3</span>
+                                            <strong>إذا لم تجد الخيار:</strong>
+                                        </div>
+                                        <small class="text-muted">افتح Chrome → الصق الرابط → اضغط Enter</small>
+                                    </div>
+                                    
+                                    <div class="step p-3" style="background: #e7f3ff; border-radius: 10px; border-left: 4px solid #0066CC;">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-info rounded-pill me-2">4</span>
+                                            <strong>ثبت التطبيق من Chrome</strong>
+                                        </div>
+                                        <small class="text-muted">اضغط زر "ثبت التطبيق" → سيعمل بنجاح! 🎉</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                    <button type="button" class="btn btn-success" onclick="openChromeDirectly()">
+                                        <i class="bi bi-google me-2"></i>جرب فتح Chrome مباشرة
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // إزالة المودال السابق إن وجد
+            const existingModal = document.getElementById('chromeInstructionsModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // إضافة المودال الجديد
+            document.body.insertAdjacentHTML('beforeend', chromeInstructionsModal);
+            
+            // إغلاق المودال السابق
+            const browserModal = bootstrap.Modal.getInstance(document.getElementById('openInBrowserModal'));
+            if (browserModal) {
+                browserModal.hide();
+            }
+            
+            // إظهار مودال التعليمات
+            const instructModal = new bootstrap.Modal(document.getElementById('chromeInstructionsModal'));
+            instructModal.show();
+            
+            // إزالة المودال بعد الإغلاق
+            document.getElementById('chromeInstructionsModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+            });
+        };
+        
+        // فتح Chrome مباشرة (محاولة أخرى)
+        window.openChromeDirectly = function() {
+            const currentUrl = window.location.href;
+            
+            // محاولة فتح Chrome بطرق مختلفة
+            try {
+                // محاولة URL scheme للـ Chrome
+                const chromeUrl = 'googlechrome://navigate?url=' + encodeURIComponent(currentUrl);
+                window.location.href = chromeUrl;
+                
+                // fallback بعد ثانية واحدة
+                setTimeout(() => {
+                    // إذا لم يعمل، جرب طريقة أخرى
+                    window.open(currentUrl, '_blank');
+                }, 1000);
+            } catch (e) {
                 copyUrlToClipboard();
-                alert('تم نسخ الرابط! الصق الرابط في Chrome لتثبيت التطبيق');
-            }, 1000);
+                alert('الرجاء فتح Chrome يدوياً والصق الرابط المنسوخ');
+            }
         };
         
         // فتح في Firefox  
         window.openInFirefox = function() {
             const currentUrl = window.location.href;
-            // محاولة فتح في Firefox
-            const firefoxUrl = 'firefox://' + currentUrl.replace(/^https?:\/\//, '');
-            window.location.href = firefoxUrl;
-            // fallback
-            setTimeout(() => {
-                copyUrlToClipboard();
-                alert('تم نسخ الرابط! الصق الرابط في Firefox لتثبيت التطبيق');
-            }, 1000);
+            
+            // نسخ الرابط فوراً
+            copyUrlToClipboard();
+            
+            // عرض رسالة بسيطة للـ Firefox (أقل شيوعاً)
+            if (typeof showToast === 'function') {
+                showToast('تم نسخ الرابط! افتح Firefox والصق الرابط للتثبيت', 'info');
+            } else {
+                alert('تم نسخ الرابط! افتح Firefox والصق الرابط للتثبيت');
+            }
+            
+            // محاولة فتح Firefox (قد لا تعمل دائماً)
+            try {
+                window.open(currentUrl, '_blank');
+            } catch (e) {
+                // تم التعامل معها بالرسالة أعلاه
+            }
         };
         
         // نسخ الرابط

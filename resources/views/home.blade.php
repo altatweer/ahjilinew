@@ -894,13 +894,25 @@
                 userAgent: navigator.userAgent
             });
             
-            // عدم إظهار الترويج إذا كان مثبت أو تم رفضه مؤخراً
+            // فحص إذا تم عرض المودال في هذه الجلسة
+            const sessionPromotionShown = sessionStorage.getItem('pwa-promotion-shown-this-session');
+            
+            // عدم إظهار الترويج إذا كان مثبت أو تم عرضه في هذه الجلسة
             const lastPromotion = localStorage.getItem('pwa-promotion-dismissed');
             const now = new Date().getTime();
             
-            if (pwaInstalled || isStandalone || (lastPromotion && now - parseInt(lastPromotion) < 7 * 24 * 60 * 60 * 1000)) {
+            if (pwaInstalled || isStandalone || sessionPromotionShown || (lastPromotion && now - parseInt(lastPromotion) < 7 * 24 * 60 * 60 * 1000)) {
+                console.log('🚫 تم تخطي ترويج التثبيت:', {
+                    pwaInstalled,
+                    isStandalone,
+                    sessionPromotionShown: !!sessionPromotionShown,
+                    recentDismissal: !!(lastPromotion && now - parseInt(lastPromotion) < 7 * 24 * 60 * 60 * 1000)
+                });
                 return;
             }
+            
+            // تسجيل أن المودال تم عرضه في هذه الجلسة
+            sessionStorage.setItem('pwa-promotion-shown-this-session', 'true');
             
             // iOS Safari - تعليمات خاصة
             if (isIOS) {
@@ -1049,6 +1061,25 @@
         // رفض الترويج
         function dismissPromotion() {
             localStorage.setItem('pwa-promotion-dismissed', new Date().getTime().toString());
+            
+            // إظهار زر لإعادة عرض التعليمات (ولكن ليس في هذه الجلسة لتجنب الإزعاج)
+            setTimeout(() => {
+                showToast('💡 نصيحة: يمكنك دائماً تثبيت التطبيق من الزر العائم أسفل اليمين!', 'info');
+            }, 2000);
+        }
+        
+        // إعادة إظهار تعليمات التثبيت (للاستخدام عند الحاجة)
+        function resetInstallPromotion() {
+            // مسح كل آثار الرفض
+            localStorage.removeItem('pwa-promotion-dismissed');
+            sessionStorage.removeItem('pwa-promotion-shown-this-session');
+            
+            // إعادة إظهار الترويج
+            setTimeout(() => {
+                showInstallPromotion();
+            }, 1000);
+            
+            showToast('تم إعادة تشغيل تعليمات التثبيت!', 'success');
         }
         
         // إظهار تحديث PWA
