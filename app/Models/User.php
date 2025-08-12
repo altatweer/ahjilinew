@@ -27,6 +27,7 @@ class User extends Authenticatable
         'location',
         'birth_date',
         'account_type',
+        'role',
         'is_active',
         'is_private',
         'last_active_at',

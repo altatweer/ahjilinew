@@ -80,11 +80,11 @@ class UserResource extends Resource
                         Forms\Components\Select::make('account_type')
                             ->label('نوع الحساب')
                             ->options([
-                                'personal' => 'شخصي',
-                                'business' => 'تجاري',
-                                'organization' => 'منظمة',
+                                'regular' => 'عادي',
+                                'verified' => 'موثق',
+                                'counselor' => 'مستشار',
                             ])
-                            ->default('personal')
+                            ->default('regular')
                             ->required()
                             ->columnSpan(1),
                     ])->columns(2),
@@ -157,14 +157,14 @@ class UserResource extends Resource
                 Tables\Columns\BadgeColumn::make('account_type')
                     ->label('نوع الحساب')
                     ->colors([
-                        'primary' => 'personal',
-                        'success' => 'business',
-                        'warning' => 'organization',
+                        'secondary' => 'regular',
+                        'success' => 'verified',
+                        'warning' => 'counselor',
                     ])
                     ->formatStateUsing(fn (string $state): string => match($state) {
-                        'personal' => 'شخصي',
-                        'business' => 'تجاري',
-                        'organization' => 'منظمة',
+                        'regular' => 'عادي',
+                        'verified' => 'موثق',
+                        'counselor' => 'مستشار',
                         default => $state,
                     }),
                 Tables\Columns\IconColumn::make('is_active')
@@ -208,9 +208,9 @@ class UserResource extends Resource
                 Tables\Filters\SelectFilter::make('account_type')
                     ->label('نوع الحساب')
                     ->options([
-                        'personal' => 'شخصي',
-                        'business' => 'تجاري',
-                        'organization' => 'منظمة',
+                        'regular' => 'عادي',
+                        'verified' => 'موثق',
+                        'counselor' => 'مستشار',
                     ]),
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('الحالة')
