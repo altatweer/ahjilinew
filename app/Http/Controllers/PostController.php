@@ -54,12 +54,13 @@ class PostController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $requireRegistration = SiteSetting::get('require_registration', false);
-        
-        if ($requireRegistration && !Auth::check()) {
-            return redirect()->route('register')
-                ->with('error', 'يجب التسجيل أولاً لإضافة منشور');
-        }
+        try {
+            $requireRegistration = SiteSetting::get('require_registration', false);
+            
+            if ($requireRegistration && !Auth::check()) {
+                return redirect()->route('register')
+                    ->with('error', 'يجب التسجيل أولاً لإضافة منشور');
+            }
 
         $validated = $request->validate([
             'content' => 'required|string|min:10|max:1000',
@@ -89,7 +90,7 @@ class PostController extends Controller
             
             if ($recentPost) {
                 return back()->withErrors([
-                    'content' => 'يجب الانتظار دقيقة واحدة بين كل منشور والآخر.'
+                    'content' => 'انتظر دقيقة واحدة'
                 ])->withInput();
             }
             
@@ -101,7 +102,7 @@ class PostController extends Controller
             
             if ($recentDuplicate) {
                 return back()->withErrors([
-                    'content' => 'لقد قمت بنشر نفس هذا المحتوى مؤخراً. لا يمكن تكرار نفس المنشور.'
+                    'content' => 'لا يمكن تكرار نفس المنشور'
                 ])->withInput();
             }
         } else {
@@ -115,7 +116,7 @@ class PostController extends Controller
                 
             if ($recentPostByIP) {
                 return back()->withErrors([
-                    'content' => 'يجب الانتظار دقيقتين بين كل منشور والآخر للمستخدمين المجهولين.'
+                    'content' => 'انتظر دقيقتين'
                 ])->withInput();
             }
             
@@ -127,7 +128,7 @@ class PostController extends Controller
             
             if ($recentDuplicateByIP) {
                 return back()->withErrors([
-                    'content' => 'تم نشر نفس هذا المحتوى مؤخراً. لا يمكن تكرار نفس المنشور.'
+                    'content' => 'لا يمكن تكرار المنشور'
                 ])->withInput();
             }
         }
@@ -159,6 +160,14 @@ class PostController extends Controller
 
         return redirect()->route('home')
             ->with('success', $message);
+            
+        } catch (\Exception $e) {
+            \Log::error('Post creation error: ' . $e->getMessage());
+            
+            return back()->withErrors([
+                'content' => 'حدث خطأ. حاول مرة أخرى'
+            ])->withInput();
+        }
     }
 
     /**
