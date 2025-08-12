@@ -23,8 +23,8 @@ class SpamProtection
         
         // Different limits for different actions
         if ($request->is('posts') && $request->isMethod('POST')) {
-            $maxAttempts = 3; // 3 posts per hour
-            $decayMinutes = 60;
+            $maxAttempts = 15; // 15 posts per hour (أكثر عقلانية)  
+            $decayMinutes = 15; // انتظار 15 دقيقة بدلاً من ساعة كاملة
         } elseif ($request->is('comments') || $request->is('posts/*/comments')) {
             $maxAttempts = 10; // 10 comments per hour  
             $decayMinutes = 60;
@@ -37,8 +37,21 @@ class SpamProtection
 
         if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
             $seconds = RateLimiter::availableIn($key);
+            $minutes = ceil($seconds / 60);
+            
+            // تسجيل مفصل للتشخيص
+            \Log::info('Rate limiting activated by SpamProtection', [
+                'ip' => $ip,
+                'key' => $key,
+                'max_attempts' => $maxAttempts,
+                'decay_minutes' => $decayMinutes,
+                'retry_after_seconds' => $seconds,
+                'retry_after_minutes' => $minutes,
+                'user_agent' => $userAgent
+            ]);
+            
             return response()->json([
-                'message' => 'تم تجاوز الحد المسموح. المحاولة التالية خلال ' . ceil($seconds / 60) . ' دقيقة.',
+                'message' => "تم تجاوز الحد المسموح ({$maxAttempts} منشور). المحاولة التالية خلال {$minutes} دقيقة.",
                 'retry_after' => $seconds
             ], 429);
         }
@@ -65,6 +78,17 @@ class SpamProtection
 
         // Count the attempt
         RateLimiter::hit($key, $decayMinutes * 60);
+        
+        // تسجيل نجاح الطلب مع عدد المحاولات المتبقية
+        $attemptsUsed = RateLimiter::attempts($key);
+        $attemptsLeft = $maxAttempts - $attemptsUsed;
+        \Log::info('Request passed SpamProtection', [
+            'ip' => $ip,
+            'attempts_used' => $attemptsUsed,
+            'attempts_left' => $attemptsLeft,
+            'max_attempts' => $maxAttempts,
+            'decay_minutes' => $decayMinutes
+        ]);
 
         return $next($request);
     }

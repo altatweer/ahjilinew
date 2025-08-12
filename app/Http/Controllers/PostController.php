@@ -87,34 +87,9 @@ class PostController extends Controller
             ])->withInput();
         }
 
-        // Check for rate limiting and duplicate posts
+        // Check for duplicate posts only (rate limiting handled by SpamProtection middleware)
         if (Auth::check()) {
             $userId = Auth::id();
-            
-            // Rate limiting: max 1 post per 10 seconds (مؤقت للاختبار) - مع تسجيل مفصل للتشخيص
-            $recentPost = Post::where('user_id', $userId)
-                ->where('created_at', '>=', now()->subSeconds(10))
-                ->first();
-            
-            if ($recentPost) {
-                $minutesAgo = $recentPost->created_at->diffInMinutes(now());
-                \Log::info('Rate limiting triggered', [
-                    'user_id' => $userId,
-                    'last_post_time' => $recentPost->created_at,
-                    'current_time' => now(),
-                    'minutes_passed' => $minutesAgo
-                ]);
-                
-                $secondsAgo = $recentPost->created_at->diffInSeconds(now());
-                return back()->withErrors([
-                    'content' => "انتظر 10 ثواني (آخر منشور منذ {$secondsAgo} ثانية)"
-                ])->withInput();
-            } else {
-                \Log::info('Rate limiting passed - no recent posts found', [
-                    'user_id' => $userId,
-                    'check_time' => now()
-                ]);
-            }
             
             // Check for exact duplicate content in last 24 hours
             $recentDuplicate = Post::where('user_id', $userId)
@@ -128,32 +103,7 @@ class PostController extends Controller
                 ])->withInput();
             }
         } else {
-            $ip = $request->ip();
-            
-            // Rate limiting for anonymous posts: max 1 post per 20 seconds (مؤقت للاختبار) - مع تسجيل مفصل
-            $recentPostByIP = Post::whereNull('user_id')
-                ->where('created_at', '>=', now()->subSeconds(20))
-                ->first();
-                
-            if ($recentPostByIP) {
-                $minutesAgo = $recentPostByIP->created_at->diffInMinutes(now());
-                \Log::info('Anonymous rate limiting triggered', [
-                    'ip' => $ip,
-                    'last_post_time' => $recentPostByIP->created_at,
-                    'current_time' => now(),
-                    'minutes_passed' => $minutesAgo
-                ]);
-                
-                $secondsAgo = $recentPostByIP->created_at->diffInSeconds(now());
-                return back()->withErrors([
-                    'content' => "انتظر 20 ثانية (آخر منشور مجهول منذ {$secondsAgo} ثانية)"
-                ])->withInput();
-            } else {
-                \Log::info('Anonymous rate limiting passed - no recent posts found', [
-                    'ip' => $ip,
-                    'check_time' => now()
-                ]);
-            }
+            // For anonymous users - only check duplicates (rate limiting handled by SpamProtection middleware)
             
             // Check for exact duplicate content
             $recentDuplicateByIP = Post::where('content', $validated['content'])
