@@ -55,6 +55,14 @@ class PostController extends Controller
     public function store(Request $request): RedirectResponse
     {
         try {
+            \Log::info('Post store method called', [
+                'user_logged_in' => Auth::check(),
+                'user_id' => Auth::id(),
+                'request_method' => $request->method(),
+                'content_length' => strlen($request->input('content', '')),
+                'has_csrf_token' => !empty($request->input('_token'))
+            ]);
+            
             $requireRegistration = SiteSetting::get('require_registration', false);
             
             if ($requireRegistration && !Auth::check()) {
@@ -83,15 +91,29 @@ class PostController extends Controller
         if (Auth::check()) {
             $userId = Auth::id();
             
-            // Rate limiting: max 1 post per minute
+            // Rate limiting: max 1 post per 10 seconds (مؤقت للاختبار) - مع تسجيل مفصل للتشخيص
             $recentPost = Post::where('user_id', $userId)
-                ->where('created_at', '>=', now()->subMinute())
-                ->exists();
+                ->where('created_at', '>=', now()->subSeconds(10))
+                ->first();
             
             if ($recentPost) {
+                $minutesAgo = $recentPost->created_at->diffInMinutes(now());
+                \Log::info('Rate limiting triggered', [
+                    'user_id' => $userId,
+                    'last_post_time' => $recentPost->created_at,
+                    'current_time' => now(),
+                    'minutes_passed' => $minutesAgo
+                ]);
+                
+                $secondsAgo = $recentPost->created_at->diffInSeconds(now());
                 return back()->withErrors([
-                    'content' => 'انتظر دقيقة واحدة'
+                    'content' => "انتظر 10 ثواني (آخر منشور منذ {$secondsAgo} ثانية)"
                 ])->withInput();
+            } else {
+                \Log::info('Rate limiting passed - no recent posts found', [
+                    'user_id' => $userId,
+                    'check_time' => now()
+                ]);
             }
             
             // Check for exact duplicate content in last 24 hours
@@ -108,16 +130,29 @@ class PostController extends Controller
         } else {
             $ip = $request->ip();
             
-            // Rate limiting for anonymous posts: max 1 post per 2 minutes
+            // Rate limiting for anonymous posts: max 1 post per 20 seconds (مؤقت للاختبار) - مع تسجيل مفصل
             $recentPostByIP = Post::whereNull('user_id')
-                ->where('created_at', '>=', now()->subMinutes(2))
-                // Note: You might want to add ip_address field to posts table for better tracking
-                ->exists();
+                ->where('created_at', '>=', now()->subSeconds(20))
+                ->first();
                 
             if ($recentPostByIP) {
+                $minutesAgo = $recentPostByIP->created_at->diffInMinutes(now());
+                \Log::info('Anonymous rate limiting triggered', [
+                    'ip' => $ip,
+                    'last_post_time' => $recentPostByIP->created_at,
+                    'current_time' => now(),
+                    'minutes_passed' => $minutesAgo
+                ]);
+                
+                $secondsAgo = $recentPostByIP->created_at->diffInSeconds(now());
                 return back()->withErrors([
-                    'content' => 'انتظر دقيقتين'
+                    'content' => "انتظر 20 ثانية (آخر منشور مجهول منذ {$secondsAgo} ثانية)"
                 ])->withInput();
+            } else {
+                \Log::info('Anonymous rate limiting passed - no recent posts found', [
+                    'ip' => $ip,
+                    'check_time' => now()
+                ]);
             }
             
             // Check for exact duplicate content
@@ -152,6 +187,13 @@ class PostController extends Controller
             'location' => $validated['location'],
             'hashtags' => $validated['hashtags'],
             'is_active' => true,
+        ]);
+        
+        \Log::info('Post created successfully', [
+            'post_id' => $post->id,
+            'user_id' => Auth::id(),
+            'content_preview' => substr($validated['content'], 0, 50),
+            'created_at' => $post->created_at
         ]);
 
         $message = $autoApprove ? 
