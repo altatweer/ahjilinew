@@ -133,3 +133,8 @@ Route::get('/test-form', function () {
 
 // Simple test post route
 Route::post('/test-post', [App\Http\Controllers\TestController::class, 'createPost']);
+
+// API Documentation route
+Route::get('/api-docs', function () {
+    return response()->file(public_path('api-docs/index.html'));
+});

@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahjili API Documentation - توثيق واجهة برمجة التطبيقات لأحجيلي</title>
+    
+    <!-- Bootstrap 5 RTL -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for code highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #5C7D99;
+            --secondary-color: #E97451;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem 0;
+        }
+        
+        .api-endpoint {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .method-badge {
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            color: white;
+        }
+        
+        .method-get { background-color: var(--info-color); }
+        .method-post { background-color: var(--success-color); }
+        .method-put { background-color: var(--warning-color); color: #000; }
+        .method-delete { background-color: var(--danger-color); }
+        
+        .endpoint-header {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .endpoint-body {
+            padding: 1.5rem;
+        }
+        
+        .code-block {
+            background-color: #2d3748;
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+        
+        .tab-content {
+            margin-top: 1rem;
+        }
+        
+        .feature-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 100;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        /* English content hidden by default */
+        .lang-en {
+            display: none;
+        }
+        
+        /* Arabic content shown by default */
+        .lang-ar {
+            display: block;
+        }
+        
+        /* When English is active */
+        body.lang-english .lang-en {
+            display: block;
+        }
+        
+        body.lang-english .lang-ar {
+            display: none;
+        }
+        
+        body.lang-english {
+            direction: ltr;
+        }
+        
+        .model-schema {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 1rem;
+        }
+        
+        .response-example {
+            background-color: #e8f5e8;
+            border-left: 4px solid var(--success-color);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .error-example {
+            background-color: #fdeaea;
+            border-left: 4px solid var(--danger-color);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Toggle -->
+    <div class="language-toggle">
+        <button class="btn btn-outline-primary btn-sm" onclick="toggleLanguage()">
+            <span class="lang-ar">🇺🇸 English</span>
+            <span class="lang-en">🇸🇦 العربية</span>
+        </button>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-3">
+                        <span class="lang-ar">📱 توثيق API احجيلي</span>
+                        <span class="lang-en">📱 Ahjili API Documentation</span>
+                    </h1>
+                    <p class="lead mb-4">
+                        <span class="lang-ar">دليل شامل لتطوير تطبيق Flutter لمنصة احجيلي الاجتماعية العراقية</span>
+                        <span class="lang-en">Comprehensive guide for developing Flutter app for Ahjili Iraqi social platform</span>
+                    </p>
+                    <div class="d-flex gap-3">
+                        <span class="badge bg-light text-dark px-3 py-2">
+                            <span class="lang-ar">الإصدار: 1.0</span>
+                            <span class="lang-en">Version: 1.0</span>
+                        </span>
+                        <span class="badge bg-light text-dark px-3 py-2">
+                            <span class="lang-ar">نوع API: REST</span>
+                            <span class="lang-en">API Type: REST</span>
+                        </span>
+                        <span class="badge bg-light text-dark px-3 py-2">
+                            <span class="lang-ar">المصادقة: Bearer Token</span>
+                            <span class="lang-en">Auth: Bearer Token</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <i class="bi bi-phone" style="font-size: 8rem; opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Navigation -->
+    <nav class="sticky-nav">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-pills nav-fill">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#overview">
+                                <span class="lang-ar">📋 نظرة عامة</span>
+                                <span class="lang-en">📋 Overview</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#authentication">
+                                <span class="lang-ar">🔐 المصادقة</span>
+                                <span class="lang-en">🔐 Authentication</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#endpoints">
+                                <span class="lang-ar">🛠️ الطرق</span>
+                                <span class="lang-en">🛠️ Endpoints</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#models">
+                                <span class="lang-ar">📊 النماذج</span>
+                                <span class="lang-en">📊 Models</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#features">
+                                <span class="lang-ar">🎯 الميزات</span>
+                                <span class="lang-en">🎯 Features</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <!-- Overview Section -->
+        <section id="overview" class="mb-5">
+            <h2 class="h1 mb-4">
+                <span class="lang-ar">📋 نظرة عامة</span>
+                <span class="lang-en">📋 Overview</span>
+            </h2>
+            
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span class="lang-ar">🎯 عن المشروع</span>
+                                <span class="lang-en">🎯 About Project</span>
+                            </h5>
+                            <p class="card-text">
+                                <span class="lang-ar">
+                                    احجيلي هي منصة اجتماعية عراقية تهدف لحل المشاكل المجتمعية ومساعدة الناس. يحتوي على نظام منشورات، تعليقات، تفاعل، وإدارة مستخدمين شامل.
+                                </span>
+                                <span class="lang-en">
+                                    Ahjili is an Iraqi social platform aimed at solving community problems and helping people. It includes posts system, comments, interactions, and comprehensive user management.
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span class="lang-ar">⚡ المتطلبات التقنية</span>
+                                <span class="lang-en">⚡ Technical Requirements</span>
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li>✅ <span class="lang-ar">Laravel 11 Backend</span><span class="lang-en">Laravel 11 Backend</span></li>
+                                <li>✅ <span class="lang-ar">MySQL Database</span><span class="lang-en">MySQL Database</span></li>
+                                <li>✅ <span class="lang-ar">REST API</span><span class="lang-en">REST API</span></li>
+                                <li>✅ <span class="lang-ar">Bearer Token Auth</span><span class="lang-en">Bearer Token Auth</span></li>
+                                <li>✅ <span class="lang-ar">Image Upload Support</span><span class="lang-en">Image Upload Support</span></li>
+                                <li>✅ <span class="lang-ar">Push Notifications Ready</span><span class="lang-en">Push Notifications Ready</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <h6>
+                    <span class="lang-ar">🔗 معلومات الاتصال</span>
+                    <span class="lang-en">🔗 Connection Info</span>
+                </h6>
+                <p class="mb-2">
+                    <strong>
+                        <span class="lang-ar">الرابط الأساسي:</span>
+                        <span class="lang-en">Base URL:</span>
+                    </strong> 
+                    <code>https://ahjili.com/api/</code>
+                </p>
+                <p class="mb-0">
+                    <strong>
+                        <span class="lang-ar">نوع المحتوى:</span>
+                        <span class="lang-en">Content Type:</span>
+                    </strong>
+                    <code>application/json</code>
+                </p>
+            </div>
+        </section>
+
+        <!-- Authentication Section -->
+        <section id="authentication" class="mb-5">
+            <h2 class="h1 mb-4">
+                <span class="lang-ar">🔐 نظام المصادقة</span>
+                <span class="lang-en">🔐 Authentication System</span>
+            </h2>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <span class="lang-ar">Bearer Token Authentication</span>
+                        <span class="lang-en">Bearer Token Authentication</span>
+                    </h5>
+                    
+                    <p>
+                        <span class="lang-ar">جميع الطلبات المحمية تتطلب إضافة Bearer Token في header:</span>
+                        <span class="lang-en">All protected requests require Bearer Token in header:</span>
+                    </p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-http">Authorization: Bearer {your_access_token}</code></pre>
+                    </div>
+                    
+                    <h6 class="mt-4">
+                        <span class="lang-ar">📝 مثال كامل للمصادقة</span>
+                        <span class="lang-en">📝 Complete Authentication Example</span>
+                    </h6>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-dart">
+// Flutter Example
+class ApiService {
+  static const String baseUrl = 'https://ahjili.com/api';
+  static String? authToken;
+  
+  static Map&lt;String, String&gt; get headers =&gt; {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    if (authToken != null) 'Authorization': 'Bearer $authToken',
+  };
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Endpoints Section -->
+        <section id="endpoints" class="mb-5">
+            <h2 class="h1 mb-4">
+                <span class="lang-ar">🛠️ طرق API</span>
+                <span class="lang-en">🛠️ API Endpoints</span>
+            </h2>
+
+            <!-- Auth Endpoints -->
+            <h3 class="h3 mb-3">
+                <span class="lang-ar">🔐 طرق المصادقة</span>
+                <span class="lang-en">🔐 Authentication Endpoints</span>
+            </h3>
+
+            <!-- Login Endpoint -->
+            <div class="api-endpoint">
+                <div class="endpoint-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="method-badge method-post">POST</span>
+                            <code class="ms-2">/auth/login</code>
+                        </div>
+                        <small class="text-muted">
+                            <span class="lang-ar">تسجيل الدخول</span>
+                            <span class="lang-en">User Login</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="endpoint-body">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#login-request">
+                                <span class="lang-ar">الطلب</span>
+                                <span class="lang-en">Request</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#login-response">
+                                <span class="lang-ar">الاستجابة</span>
+                                <span class="lang-en">Response</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#login-flutter">
+                                <span class="lang-ar">مثال Flutter</span>
+                                <span class="lang-en">Flutter Example</span>
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="login-request">
+                            <h6>
+                                <span class="lang-ar">📤 بيانات الطلب</span>
+                                <span class="lang-en">📤 Request Body</span>
+                            </h6>
+                            <div class="code-block">
+                                <pre><code class="language-json">{
+  "username": "user123",
+  "password": "password123",
+  "remember": true
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="login-response">
+                            <div class="response-example">
+                                <h6>
+                                    <span class="lang-ar">✅ استجابة ناجحة (200)</span>
+                                    <span class="lang-en">✅ Success Response (200)</span>
+                                </h6>
+                                <div class="code-block">
+                                    <pre><code class="language-json">{
+  "success": true,
+  "message": "تم تسجيل الدخول بنجاح",
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "user123",
+      "display_name": "محمد أحمد",
+      "email": "user@example.com",
+      "avatar_url": "https://ahjili.com/storage/avatars/user.jpg",
+      "role": "user",
+      "account_type": "verified"
+    },
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "expires_in": 3600
+  }
+}</code></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="error-example">
+                                <h6>
+                                    <span class="lang-ar">❌ استجابة خطأ (401)</span>
+                                    <span class="lang-en">❌ Error Response (401)</span>
+                                </h6>
+                                <div class="code-block">
+                                    <pre><code class="language-json">{
+  "success": false,
+  "message": "بيانات الدخول غير صحيحة",
+  "errors": {
+    "username": ["اسم المستخدم أو كلمة المرور غير صحيحة"]
+  }
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="login-flutter">
+                            <div class="code-block">
+                                <pre><code class="language-dart">
+Future&lt;LoginResponse&gt; login(String username, String password) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/auth/login'),
+    headers: headers,
+    body: jsonEncode({
+      'username': username,
+      'password': password,
+      'remember': true,
+    }),
+  );
+  
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    authToken = data['data']['token'];
+    return LoginResponse.fromJson(data);
+  } else {
+    throw ApiException.fromResponse(response);
+  }
+}
+                                </code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Register Endpoint -->
+            <div class="api-endpoint">
+                <div class="endpoint-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="method-badge method-post">POST</span>
+                            <code class="ms-2">/auth/register</code>
+                        </div>
+                        <small class="text-muted">
+                            <span class="lang-ar">إنشاء حساب جديد</span>
+                            <span class="lang-en">Create New Account</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="endpoint-body">
+                    <h6>
+                        <span class="lang-ar">📤 بيانات الطلب</span>
+                        <span class="lang-en">📤 Request Body</span>
+                    </h6>
+                    <div class="code-block">
+                        <pre><code class="language-json">{
+  "username": "newuser123",
+  "display_name": "محمد الجديد",
+  "password": "password123",
+  "password_confirmation": "password123"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posts Endpoints -->
+            <h3 class="h3 mb-3 mt-5">
+                <span class="lang-ar">📝 طرق المنشورات</span>
+                <span class="lang-en">📝 Posts Endpoints</span>
+            </h3>
+
+            <!-- Get Posts -->
+            <div class="api-endpoint">
+                <div class="endpoint-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="method-badge method-get">GET</span>
+                            <code class="ms-2">/posts</code>
+                        </div>
+                        <small class="text-muted">
+                            <span class="lang-ar">جلب المنشورات</span>
+                            <span class="lang-en">Get Posts</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="endpoint-body">
+                    <h6>
+                        <span class="lang-ar">📋 معاملات الاستعلام</span>
+                        <span class="lang-en">📋 Query Parameters</span>
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span class="lang-ar">المعامل</span>
+                                        <span class="lang-en">Parameter</span>
+                                    </th>
+                                    <th>
+                                        <span class="lang-ar">النوع</span>
+                                        <span class="lang-en">Type</span>
+                                    </th>
+                                    <th>
+                                        <span class="lang-ar">الوصف</span>
+                                        <span class="lang-en">Description</span>
+                                    </th>
+                                    <th>
+                                        <span class="lang-ar">افتراضي</span>
+                                        <span class="lang-en">Default</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>page</code></td>
+                                    <td>integer</td>
+                                    <td>
+                                        <span class="lang-ar">رقم الصفحة</span>
+                                        <span class="lang-en">Page number</span>
+                                    </td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td><code>category</code></td>
+                                    <td>string</td>
+                                    <td>
+                                        <span class="lang-ar">فئة المنشور</span>
+                                        <span class="lang-en">Post category</span>
+                                    </td>
+                                    <td>all</td>
+                                </tr>
+                                <tr>
+                                    <td><code>search</code></td>
+                                    <td>string</td>
+                                    <td>
+                                        <span class="lang-ar">بحث في المحتوى</span>
+                                        <span class="lang-en">Search in content</span>
+                                    </td>
+                                    <td>-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="response-example">
+                        <h6>
+                            <span class="lang-ar">✅ مثال الاستجابة</span>
+                            <span class="lang-en">✅ Response Example</span>
+                        </h6>
+                        <div class="code-block">
+                            <pre><code class="language-json">{
+  "success": true,
+  "data": {
+    "posts": [
+      {
+        "id": 1,
+        "content": "هذا منشور تجريبي",
+        "image_url": "https://ahjili.com/storage/posts/image1.jpg",
+        "category": "complaint",
+        "hashtags": ["مشكلة", "تجربة"],
+        "likes_count": 15,
+        "comments_count": 8,
+        "shares_count": 3,
+        "created_at": "2025-01-12T15:30:00Z",
+        "user": {
+          "id": 1,
+          "username": "user123",
+          "display_name": "محمد أحمد",
+          "avatar_url": "https://ahjili.com/storage/avatars/user1.jpg"
+        },
+        "is_liked": false,
+        "is_bookmarked": false
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "total_pages": 10,
+      "total_items": 95,
+      "per_page": 10
+    }
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Post -->
+            <div class="api-endpoint">
+                <div class="endpoint-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="method-badge method-post">POST</span>
+                            <code class="ms-2">/posts</code>
+                        </div>
+                        <small class="text-muted">
+                            <span class="lang-ar">إنشاء منشور جديد</span>
+                            <span class="lang-en">Create New Post</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="endpoint-body">
+                    <p>
+                        <span class="lang-ar">🔒 <strong>يتطلب مصادقة:</strong> نعم</span>
+                        <span class="lang-en">🔒 <strong>Requires Authentication:</strong> Yes</span>
+                    </p>
+                    
+                    <h6>
+                        <span class="lang-ar">📤 بيانات الطلب (multipart/form-data)</span>
+                        <span class="lang-en">📤 Request Body (multipart/form-data)</span>
+                    </h6>
+                    <div class="code-block">
+                        <pre><code class="language-json">{
+  "content": "محتوى المنشور هنا",
+  "category": "complaint",
+  "location": "بغداد، العراق",
+  "hashtags": "مشكلة,تجربة,حل",
+  "type": "community",
+  "image": "[FILE]"
+}</code></pre>
+                    </div>
+                    
+                    <h6 class="mt-3">
+                        <span class="lang-ar">📋 الحقول المطلوبة</span>
+                        <span class="lang-en">📋 Required Fields</span>
+                    </h6>
+                    <ul>
+                        <li><code>content</code> - 
+                            <span class="lang-ar">محتوى المنشور (10-2000 حرف)</span>
+                            <span class="lang-en">Post content (10-2000 characters)</span>
+                        </li>
+                        <li><code>category</code> - 
+                            <span class="lang-ar">الفئة: complaint, experience, recommendation, question, review, general</span>
+                            <span class="lang-en">Category: complaint, experience, recommendation, question, review, general</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Comments Endpoints -->
+            <h3 class="h3 mb-3 mt-5">
+                <span class="lang-ar">💬 طرق التعليقات</span>
+                <span class="lang-en">💬 Comments Endpoints</span>
+            </h3>
+
+            <!-- Get Comments -->
+            <div class="api-endpoint">
+                <div class="endpoint-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="method-badge method-get">GET</span>
+                            <code class="ms-2">/posts/{id}/comments</code>
+                        </div>
+                        <small class="text-muted">
+                            <span class="lang-ar">جلب تعليقات المنشور</span>
+                            <span class="lang-en">Get Post Comments</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="endpoint-body">
+                    <div class="response-example">
+                        <h6>
+                            <span class="lang-ar">✅ مثال الاستجابة</span>
+                            <span class="lang-en">✅ Response Example</span>
+                        </h6>
+                        <div class="code-block">
+                            <pre><code class="language-json">{
+  "success": true,
+  "data": {
+    "comments": [
+      {
+        "id": 1,
+        "content": "تعليق مفيد على المنشور",
+        "likes_count": 5,
+        "replies_count": 2,
+        "created_at": "2025-01-12T16:00:00Z",
+        "user": {
+          "id": 2,
+          "username": "commenter",
+          "display_name": "علي حسن",
+          "avatar_url": "https://ahjili.com/storage/avatars/user2.jpg"
+        },
+        "is_liked": false,
+        "replies": [
+          {
+            "id": 2,
+            "content": "رد على التعليق",
+            "created_at": "2025-01-12T16:30:00Z",
+            "user": {
+              "id": 1,
+              "username": "user123",
+              "display_name": "محمد أحمد"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Interactions -->
+            <h3 class="h3 mb-3 mt-5">
+                <span class="lang-ar">👍 طرق التفاعل</span>
+                <span class="lang-en">👍 Interaction Endpoints</span>
+            </h3>
+
+            <!-- Like Post -->
+            <div class="api-endpoint">
+                <div class="endpoint-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="method-badge method-post">POST</span>
+                            <code class="ms-2">/posts/{id}/like</code>
+                        </div>
+                        <small class="text-muted">
+                            <span class="lang-ar">إعجاب/إلغاء إعجاب</span>
+                            <span class="lang-en">Like/Unlike Post</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="endpoint-body">
+                    <p>
+                        <span class="lang-ar">🔒 <strong>يتطلب مصادقة:</strong> لا (يمكن للمجهولين)</span>
+                        <span class="lang-en">🔒 <strong>Requires Authentication:</strong> No (Anonymous allowed)</span>
+                    </p>
+                    
+                    <div class="response-example">
+                        <h6>
+                            <span class="lang-ar">✅ استجابة الإعجاب</span>
+                            <span class="lang-en">✅ Like Response</span>
+                        </h6>
+                        <div class="code-block">
+                            <pre><code class="language-json">{
+  "success": true,
+  "message": "تم الإعجاب بالمنشور",
+  "data": {
+    "liked": true,
+    "likes_count": 16
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Models Section -->
+        <section id="models" class="mb-5">
+            <h2 class="h1 mb-4">
+                <span class="lang-ar">📊 نماذج البيانات</span>
+                <span class="lang-en">📊 Data Models</span>
+            </h2>
+
+            <!-- User Model -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <span class="lang-ar">👤 نموذج المستخدم (User)</span>
+                        <span class="lang-en">👤 User Model</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="model-schema">
+                        <pre><code class="language-typescript">interface User {
+  id: number;
+  username: string;
+  display_name: string;
+  email?: string; // Only in profile context
+  avatar_url?: string;
+  bio?: string;
+  location?: string;
+  role: 'user' | 'moderator' | 'admin' | 'super-admin';
+  account_type: 'regular' | 'verified' | 'counselor';
+  is_active: boolean;
+  created_at: string; // ISO 8601
+  last_seen_at?: string; // ISO 8601
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post Model -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <span class="lang-ar">📝 نموذج المنشور (Post)</span>
+                        <span class="lang-en">📝 Post Model</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="model-schema">
+                        <pre><code class="language-typescript">interface Post {
+  id: number;
+  content: string;
+  image_url?: string;
+  category: 'complaint' | 'experience' | 'recommendation' | 'question' | 'review' | 'general';
+  type: 'anonymous' | 'community';
+  location?: string;
+  hashtags: string[];
+  status: 'pending' | 'approved' | 'rejected';
+  likes_count: number;
+  comments_count: number;
+  shares_count: number;
+  views_count: number;
+  created_at: string; // ISO 8601
+  updated_at: string; // ISO 8601
+  user?: User; // null for anonymous posts
+  is_liked: boolean; // Current user's like status
+  is_bookmarked: boolean; // Current user's bookmark status
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comment Model -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <span class="lang-ar">💬 نموذج التعليق (Comment)</span>
+                        <span class="lang-en">💬 Comment Model</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="model-schema">
+                        <pre><code class="language-typescript">interface Comment {
+  id: number;
+  post_id: number;
+  parent_id?: number; // For replies
+  content: string;
+  likes_count: number;
+  replies_count: number;
+  status: 'pending' | 'approved' | 'rejected';
+  is_anonymous: boolean;
+  anonymous_name?: string; // For anonymous comments
+  created_at: string; // ISO 8601
+  user?: User; // null for anonymous comments
+  replies?: Comment[]; // Nested replies
+  is_liked: boolean; // Current user's like status
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="mb-5">
+            <h2 class="h1 mb-4">
+                <span class="lang-ar">🎯 الميزات المطلوبة في التطبيق</span>
+                <span class="lang-en">🎯 Required App Features</span>
+            </h2>
+
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span class="lang-ar">🔐 المصادقة والمستخدمين</span>
+                                <span class="lang-en">🔐 Authentication & Users</span>
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li>✅ <span class="lang-ar">تسجيل دخول</span><span class="lang-en">Login</span></li>
+                                <li>✅ <span class="lang-ar">إنشاء حساب</span><span class="lang-en">Register</span></li>
+                                <li>✅ <span class="lang-ar">تسجيل خروج</span><span class="lang-en">Logout</span></li>
+                                <li>✅ <span class="lang-ar">الملف الشخصي</span><span class="lang-en">Profile</span></li>
+                                <li>✅ <span class="lang-ar">تعديل البيانات</span><span class="lang-en">Edit Profile</span></li>
+                                <li>✅ <span class="lang-ar">رفع صورة الملف الشخصي</span><span class="lang-en">Avatar Upload</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span class="lang-ar">📝 المنشورات</span>
+                                <span class="lang-en">📝 Posts</span>
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li>✅ <span class="lang-ar">عرض المنشورات</span><span class="lang-en">View Posts</span></li>
+                                <li>✅ <span class="lang-ar">إنشاء منشور</span><span class="lang-en">Create Post</span></li>
+                                <li>✅ <span class="lang-ar">رفع صور</span><span class="lang-en">Image Upload</span></li>
+                                <li>✅ <span class="lang-ar">فلترة بالفئات</span><span class="lang-en">Filter by Categories</span></li>
+                                <li>✅ <span class="lang-ar">البحث</span><span class="lang-en">Search</span></li>
+                                <li>✅ <span class="lang-ar">الهاشتاغ</span><span class="lang-en">Hashtags</span></li>
+                                <li>✅ <span class="lang-ar">المنشورات المجهولة</span><span class="lang-en">Anonymous Posts</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span class="lang-ar">💬 التفاعل</span>
+                                <span class="lang-en">💬 Interactions</span>
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li>✅ <span class="lang-ar">الإعجاب</span><span class="lang-en">Like Posts</span></li>
+                                <li>✅ <span class="lang-ar">التعليقات</span><span class="lang-en">Comments</span></li>
+                                <li>✅ <span class="lang-ar">الردود</span><span class="lang-en">Replies</span></li>
+                                <li>✅ <span class="lang-ar">المشاركة</span><span class="lang-en">Share</span></li>
+                                <li>✅ <span class="lang-ar">الحفظ</span><span class="lang-en">Bookmark</span></li>
+                                <li>✅ <span class="lang-ar">التعليقات المجهولة</span><span class="lang-en">Anonymous Comments</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span class="lang-ar">🔔 الإشعارات</span>
+                                <span class="lang-en">🔔 Notifications</span>
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li>✅ <span class="lang-ar">إشعارات فورية</span><span class="lang-en">Push Notifications</span></li>
+                                <li>✅ <span class="lang-ar">إشعارات الإعجاب</span><span class="lang-en">Like Notifications</span></li>
+                                <li>✅ <span class="lang-ar">إشعارات التعليقات</span><span class="lang-en">Comment Notifications</span></li>
+                                <li>✅ <span class="lang-ar">إشعارات المنشورات الجديدة</span><span class="lang-en">New Posts Notifications</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span class="lang-ar">📱 الميزات التقنية</span>
+                                <span class="lang-en">📱 Technical Features</span>
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li>✅ <span class="lang-ar">العمل بدون انترنت</span><span class="lang-en">Offline Support</span></li>
+                                <li>✅ <span class="lang-ar">تحديث تلقائي</span><span class="lang-en">Auto Refresh</span></li>
+                                <li>✅ <span class="lang-ar">ضغط الصور</span><span class="lang-en">Image Compression</span></li>
+                                <li>✅ <span class="lang-ar">الكاميرا والمعرض</span><span class="lang-en">Camera & Gallery</span></li>
+                                <li>✅ <span class="lang-ar">مشاركة خارجية</span><span class="lang-en">External Sharing</span></li>
+                                <li>✅ <span class="lang-ar">Deep Links</span><span class="lang-en">Deep Links</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span class="lang-ar">🎨 واجهة المستخدم</span>
+                                <span class="lang-en">🎨 User Interface</span>
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li>✅ <span class="lang-ar">تصميم RTL</span><span class="lang-en">RTL Design</span></li>
+                                <li>✅ <span class="lang-ar">الوضع الداكن</span><span class="lang-en">Dark Mode</span></li>
+                                <li>✅ <span class="lang-ar">متجاوب</span><span class="lang-en">Responsive</span></li>
+                                <li>✅ <span class="lang-ar">أنيميشن سلس</span><span class="lang-en">Smooth Animations</span></li>
+                                <li>✅ <span class="lang-ar">تحميل تدريجي</span><span class="lang-en">Lazy Loading</span></li>
+                                <li>✅ <span class="lang-ar">Pull to Refresh</span><span class="lang-en">Pull to Refresh</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Specifications -->
+            <div class="alert alert-warning mt-4">
+                <h5>
+                    <span class="lang-ar">⚠️ متطلبات تقنية مهمة</span>
+                    <span class="lang-en">⚠️ Important Technical Requirements</span>
+                </h5>
+                <ul class="mb-0">
+                    <li>
+                        <span class="lang-ar">🔐 حفظ آمن للـ Token باستخدام secure storage</span>
+                        <span class="lang-en">🔐 Secure token storage using secure storage</span>
+                    </li>
+                    <li>
+                        <span class="lang-ar">📱 دعم Android 5.0+ و iOS 12.0+</span>
+                        <span class="lang-en">📱 Support Android 5.0+ and iOS 12.0+</span>
+                    </li>
+                    <li>
+                        <span class="lang-ar">🌐 Error handling شامل مع رسائل واضحة</span>
+                        <span class="lang-en">🌐 Comprehensive error handling with clear messages</span>
+                    </li>
+                    <li>
+                        <span class="lang-ar">⚡ تحسين الأداء وسرعة التحميل</span>
+                        <span class="lang-en">⚡ Performance optimization and fast loading</span>
+                    </li>
+                    <li>
+                        <span class="lang-ar">🔄 Automatic refresh عند العودة للتطبيق</span>
+                        <span class="lang-en">🔄 Automatic refresh when returning to app</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="mb-5">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>
+                        <span class="lang-ar">📞 تواصل للدعم التقني</span>
+                        <span class="lang-en">📞 Contact for Technical Support</span>
+                    </h5>
+                    <p class="text-muted">
+                        <span class="lang-ar">للاستفسارات التقنية أو الحصول على مساعدة في التطوير</span>
+                        <span class="lang-en">For technical inquiries or development assistance</span>
+                    </p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="mailto:dev@ahjili.com" class="btn btn-outline-primary">
+                            <i class="bi bi-envelope"></i> 
+                            dev@ahjili.com
+                        </a>
+                        <a href="https://t.me/ahjili_support" class="btn btn-outline-info">
+                            <i class="bi bi-telegram"></i> 
+                            Telegram
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>
+                        <span class="lang-ar">احجيلي - منصة التواصل العراقية</span>
+                        <span class="lang-en">Ahjili - Iraqi Social Platform</span>
+                    </h5>
+                    <p class="text-muted">
+                        <span class="lang-ar">حلول مجتمعية، مساعدة، وتواصل فعال</span>
+                        <span class="lang-en">Community solutions, help, and effective communication</span>
+                    </p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p class="text-muted mb-0">
+                        <span class="lang-ar">© 2025 احجيلي. جميع الحقوق محفوظة.</span>
+                        <span class="lang-en">© 2025 Ahjili. All rights reserved.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+        // Language Toggle
+        function toggleLanguage() {
+            const body = document.body;
+            const isEnglish = body.classList.contains('lang-english');
+            
+            if (isEnglish) {
+                body.classList.remove('lang-english');
+                body.setAttribute('dir', 'rtl');
+                localStorage.setItem('language', 'ar');
+            } else {
+                body.classList.add('lang-english');
+                body.setAttribute('dir', 'ltr');
+                localStorage.setItem('language', 'en');
+            }
+        }
+        
+        // Load saved language preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedLang = localStorage.getItem('language');
+            if (savedLang === 'en') {
+                document.body.classList.add('lang-english');
+                document.body.setAttribute('dir', 'ltr');
+            }
+        });
+        
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Active navigation highlighting
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
