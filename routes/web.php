@@ -41,20 +41,17 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 
 // Posts
 Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
-Route::post('/posts', [PostController::class, 'store'])->middleware('spam.protection')->name('posts.store');
+Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 
-// Anonymous Comments (with spam protection)
+// Anonymous Comments 
 Route::post('/posts/{post}/comments/anonymous', [CommentController::class, 'storeAnonymous'])
-    ->middleware('spam.protection')
     ->name('comments.store.anonymous');
 
-// Anonymous Post Interactions (with spam protection)
+// Anonymous Post Interactions 
 Route::post('/posts/{post}/like/anonymous', [PostController::class, 'toggleLikeAnonymous'])
-    ->middleware('spam.protection')
     ->name('posts.like.anonymous');
 Route::post('/posts/{post}/share/anonymous', [PostController::class, 'shareAnonymous'])
-    ->middleware('spam.protection')
     ->name('posts.share.anonymous');
 
 /*
@@ -105,29 +102,22 @@ Route::post('/logout', function(Illuminate\Http\Request $request) {
 */
 
 Route::middleware('auth')->group(function () {
-    // Post interactions (with spam protection)
+    // Post interactions 
     Route::post('/posts/{post}/like', [PostController::class, 'toggleLike'])
-        ->middleware('spam.protection')
         ->name('posts.like');
     Route::post('/posts/{post}/share', [PostController::class, 'share'])
-        ->middleware('spam.protection')
         ->name('posts.share');
     Route::post('/posts/{post}/save', [PostController::class, 'toggleSave'])
-        ->middleware('spam.protection')
         ->name('posts.save');
     Route::post('/posts/{post}/report', [PostController::class, 'report'])
-        ->middleware('spam.protection')
         ->name('posts.report');
     
-    // Comments (with spam protection)
+    // Comments 
     Route::post('/posts/{post}/comments', [CommentController::class, 'store'])
-        ->middleware('spam.protection')
         ->name('comments.store');
     Route::post('/comments/{comment}/like', [CommentController::class, 'toggleLike'])
-        ->middleware('spam.protection')
         ->name('comments.like');
     Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])
-        ->middleware('spam.protection')
         ->name('comments.reply');
     
     // User dashboard

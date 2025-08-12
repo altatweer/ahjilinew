@@ -60,7 +60,9 @@ class PostController extends Controller
                 'user_id' => Auth::id(),
                 'request_method' => $request->method(),
                 'content_length' => strlen($request->input('content', '')),
-                'has_csrf_token' => !empty($request->input('_token'))
+                'has_csrf_token' => !empty($request->input('_token')),
+                'content_preview' => substr($request->input('content', ''), 0, 50),
+                'all_inputs' => $request->only(['content', 'type', 'category', 'location', 'hashtags', 'guest_name'])
             ]);
             
             $requireRegistration = SiteSetting::get('require_registration', false);
@@ -71,14 +73,20 @@ class PostController extends Controller
             }
 
         $validated = $request->validate([
-            'content' => 'required|string|min:10|max:1000',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'type' => 'required|in:anonymous,community',
-            'category' => 'required|in:complaint,experience,recommendation,question,review,general',
-            'location' => 'required|string',
-            'hashtags' => 'nullable|string|max:200',
-            'guest_name' => 'nullable|string|max:100', // للمنشورات المجهولة
+            'content' => 'required|string|min:1|max:2000', // مبسط أكثر
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB
+            'type' => 'nullable|in:anonymous,community', // اختياري
+            'category' => 'nullable|in:complaint,experience,recommendation,question,review,general', // اختياري
+            'location' => 'nullable|string', // اختياري
+            'hashtags' => 'nullable|string|max:500',
+            'guest_name' => 'nullable|string|max:100',
         ]);
+
+        // Set default values for optional fields
+        $validated['type'] = $validated['type'] ?? (Auth::check() ? 'community' : 'anonymous');
+        $validated['category'] = $validated['category'] ?? 'general';
+        $validated['location'] = $validated['location'] ?? 'غير محدد';
+        $validated['hashtags'] = $validated['hashtags'] ?? '';
 
         // Validate community type for authenticated users only
         if ($validated['type'] === 'community' && !Auth::check()) {
@@ -87,7 +95,7 @@ class PostController extends Controller
             ])->withInput();
         }
 
-        // Check for duplicate posts only (rate limiting handled by SpamProtection middleware)
+        // Check for duplicate posts only
         if (Auth::check()) {
             $userId = Auth::id();
             
@@ -103,7 +111,7 @@ class PostController extends Controller
                 ])->withInput();
             }
         } else {
-            // For anonymous users - only check duplicates (rate limiting handled by SpamProtection middleware)
+            // For anonymous users - only check duplicates
             
             // Check for exact duplicate content
             $recentDuplicateByIP = Post::where('content', $validated['content'])
@@ -154,8 +162,19 @@ class PostController extends Controller
                 ->with('success', $message)
                 ->header('Content-Type', 'text/html; charset=UTF-8');
                 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::warning('Validation failed for post creation', [
+                'errors' => $e->errors(),
+                'user_id' => Auth::id(),
+                'content_preview' => substr($request->input('content', ''), 0, 50)
+            ]);
+            throw $e; // Re-throw validation exceptions
         } catch (\Exception $e) {
-            \Log::error('Post creation error: ' . $e->getMessage());
+            \Log::error('Post creation error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id' => Auth::id(),
+                'content_preview' => substr($request->input('content', ''), 0, 50)
+            ]);
             
             return back()->withErrors([
                 'content' => 'حدث خطأ. حاول مرة أخرى'
