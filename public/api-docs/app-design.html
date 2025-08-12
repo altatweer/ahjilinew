@@ -1194,6 +1194,75 @@
                     <input type="text" class="form-control" id="location-input" placeholder="المدينة أو المنطقة">
                 </div>
 
+                <!-- خيارات النشر المجهول -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="lang-ar">خيارات النشر</span>
+                        <span class="lang-en">Posting Options</span>
+                    </label>
+                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: #f8f9fa;">
+                        
+                        <!-- خيار النشر باسم العضو -->
+                        <div style="display: flex; align-items: center; margin-bottom: 12px; padding: 12px; background: white; border-radius: 8px; border: 2px solid var(--primary-color);">
+                            <input type="radio" id="public-post" name="post-type" value="public" checked style="margin-left: 10px;">
+                            <label for="public-post" style="flex: 1; margin: 0; font-weight: 500;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="bi bi-person-circle" style="color: var(--primary-color); font-size: 18px;"></i>
+                                    <span>
+                                        <span class="lang-ar">نشر باسمي الحقيقي</span>
+                                        <span class="lang-en">Post with my real name</span>
+                                    </span>
+                                </div>
+                                <small style="color: #666; display: block; margin-top: 4px;">
+                                    <span class="lang-ar">سيظهر اسمك وصورتك الشخصية</span>
+                                    <span class="lang-en">Your name and profile picture will be shown</span>
+                                </small>
+                            </label>
+                        </div>
+
+                        <!-- خيار النشر المجهول للعضو -->
+                        <div style="display: flex; align-items: center; margin-bottom: 12px; padding: 12px; background: white; border-radius: 8px; border: 1px solid #ddd;">
+                            <input type="radio" id="anonymous-member" name="post-type" value="anonymous-member" style="margin-left: 10px;">
+                            <label for="anonymous-member" style="flex: 1; margin: 0; font-weight: 500;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="bi bi-incognito" style="color: var(--warning-color); font-size: 18px;"></i>
+                                    <span>
+                                        <span class="lang-ar">نشر مجهول (عضو)</span>
+                                        <span class="lang-en">Anonymous post (member)</span>
+                                    </span>
+                                </div>
+                                <small style="color: #666; display: block; margin-top: 4px;">
+                                    <span class="lang-ar">ستبقى مسجل الدخول لكن بدون إظهار هويتك</span>
+                                    <span class="lang-en">Stay logged in but without showing your identity</span>
+                                </small>
+                            </label>
+                        </div>
+
+                        <!-- خيار النشر كزائر مجهول -->
+                        <div style="display: flex; align-items: center; padding: 12px; background: white; border-radius: 8px; border: 1px solid #ddd;">
+                            <input type="radio" id="guest-post" name="post-type" value="guest" style="margin-left: 10px;">
+                            <label for="guest-post" style="flex: 1; margin: 0; font-weight: 500;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="bi bi-person-x" style="color: #666; font-size: 18px;"></i>
+                                    <span>
+                                        <span class="lang-ar">نشر كزائر مجهول</span>
+                                        <span class="lang-en">Post as anonymous guest</span>
+                                    </span>
+                                </div>
+                                <small style="color: #666; display: block; margin-top: 4px;">
+                                    <span class="lang-ar">نشر بدون تسجيل دخول</span>
+                                    <span class="lang-en">Post without logging in</span>
+                                </small>
+                            </label>
+                        </div>
+
+                        <!-- اسم مستعار للزائر المجهول -->
+                        <div id="guest-name-field" style="margin-top: 12px; display: none;">
+                            <input type="text" class="form-control" placeholder="اختر اسم مستعار (اختياري)" style="font-size: 14px;">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label">
                         <span class="lang-ar">الهاشتاغ</span>
@@ -1528,6 +1597,7 @@
             const textarea = document.getElementById('post-content-textarea');
             const locationInput = document.getElementById('location-input');
             const hashtagInput = document.getElementById('hashtags-input');
+            const guestNameInput = document.querySelector('#guest-name-field input');
             
             if (textarea) {
                 textarea.placeholder = lang === 'ar' 
@@ -1546,6 +1616,64 @@
                     ? 'مثال: مشكلة، حل، تجربة'
                     : 'Example: problem, solution, experience';
             }
+            
+            if (guestNameInput) {
+                guestNameInput.placeholder = lang === 'ar' 
+                    ? 'اختر اسم مستعار (اختياري)'
+                    : 'Choose a nickname (optional)';
+            }
+        }
+
+        // Post Type Functionality
+        function handlePostTypeChange() {
+            const guestNameField = document.getElementById('guest-name-field');
+            
+            document.querySelectorAll('input[name="post-type"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // إظهار/إخفاء حقل الاسم المستعار
+                    if (this.value === 'guest' && this.checked) {
+                        guestNameField.style.display = 'block';
+                    } else {
+                        guestNameField.style.display = 'none';
+                    }
+                    
+                    // تحديث بصري للخيارات
+                    document.querySelectorAll('input[name="post-type"]').forEach(r => {
+                        const container = r.closest('div');
+                        if (r.checked) {
+                            container.style.border = '2px solid var(--primary-color)';
+                            container.style.backgroundColor = '#f0f7ff';
+                        } else {
+                            container.style.border = '1px solid #ddd';
+                            container.style.backgroundColor = 'white';
+                        }
+                    });
+                    
+                    // تحديث زر النشر
+                    updatePublishButton();
+                });
+            });
+        }
+
+        // تحديث نص زر النشر بناءً على نوع النشر
+        function updatePublishButton() {
+            const selectedType = document.querySelector('input[name="post-type"]:checked').value;
+            const publishBtn = document.querySelector('.btn-primary');
+            const isArabic = !document.body.classList.contains('lang-english');
+            
+            if (selectedType === 'public') {
+                publishBtn.innerHTML = isArabic 
+                    ? '<i class="bi bi-send"></i> نشر المحتوى'
+                    : '<i class="bi bi-send"></i> Publish Post';
+            } else if (selectedType === 'anonymous-member') {
+                publishBtn.innerHTML = isArabic 
+                    ? '<i class="bi bi-incognito"></i> نشر مجهول'
+                    : '<i class="bi bi-incognito"></i> Post Anonymously';
+            } else {
+                publishBtn.innerHTML = isArabic 
+                    ? '<i class="bi bi-person-x"></i> نشر كزائر'
+                    : '<i class="bi bi-person-x"></i> Post as Guest';
+            }
         }
         
         // Initialize app
@@ -1561,6 +1689,14 @@
             } else {
                 updatePlaceholders('ar');
             }
+            
+            // Initialize post type functionality
+            handlePostTypeChange();
+            
+            // Set initial publish button text
+            setTimeout(() => {
+                updatePublishButton();
+            }, 100);
             
             // Add some interactive feedback
             document.addEventListener('click', function(e) {

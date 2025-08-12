@@ -85,6 +85,15 @@ class ApiService {
   static Future<void> removeAuthToken() async {
     await _storage.delete(key: 'auth_token');
   }
+
+  // Get app settings (public endpoint)
+  static Future<ApiResponse<AppSettings>> getSettings() async {
+    return await get<AppSettings>(
+      '/settings',
+      withAuth: false,
+      fromJson: (json) => AppSettings.fromJson(json),
+    );
+  }
   
   // Get headers with auth token
   static Future<Map<String, String>> getHeaders({bool withAuth = true}) async {
@@ -235,6 +244,48 @@ class ApiResponse<T> {
 ### 3. Data Models
 
 ```dart
+// models/app_settings.dart
+class AppSettings {
+  final bool anonymousPostingEnabled;
+  final bool anonymousCommentsEnabled;
+  final bool registrationEnabled;
+  final int maxPostLength;
+  final int maxImageSize;
+  final List<String> supportedImageTypes;
+  final List<String> categories;
+  final String appName;
+  final String appVersion;
+  final bool maintenanceMode;
+
+  AppSettings({
+    required this.anonymousPostingEnabled,
+    required this.anonymousCommentsEnabled,
+    required this.registrationEnabled,
+    required this.maxPostLength,
+    required this.maxImageSize,
+    required this.supportedImageTypes,
+    required this.categories,
+    required this.appName,
+    required this.appVersion,
+    required this.maintenanceMode,
+  });
+
+  factory AppSettings.fromJson(Map<String, dynamic> json) {
+    return AppSettings(
+      anonymousPostingEnabled: json['anonymous_posting_enabled'] ?? false,
+      anonymousCommentsEnabled: json['anonymous_comments_enabled'] ?? false,
+      registrationEnabled: json['registration_enabled'] ?? true,
+      maxPostLength: json['max_post_length'] ?? 2000,
+      maxImageSize: json['max_image_size'] ?? 5120,
+      supportedImageTypes: List<String>.from(json['supported_image_types'] ?? []),
+      categories: List<String>.from(json['categories'] ?? []),
+      appName: json['app_name'] ?? 'احجيلي',
+      appVersion: json['app_version'] ?? '1.0.0',
+      maintenanceMode: json['maintenance_mode'] ?? false,
+    );
+  }
+}
+
 // models/user.dart
 class User {
   final int id;
@@ -1490,4 +1541,500 @@ This comprehensive Flutter implementation guide provides:
 9. **RTL support** for Arabic content
 10. **Image handling** with caching and compression
 
+## 🎭 Anonymous Posting & Comments Implementation
+
+### Settings Management Service
+
+```dart
+// services/settings_service.dart
+import '../models/app_settings.dart';
+import 'api_service.dart';
+
+class SettingsService {
+  static AppSettings? _cachedSettings;
+  
+  // Get app settings (cached)
+  static Future<AppSettings?> getSettings() async {
+    if (_cachedSettings != null) {
+      return _cachedSettings;
+    }
+    
+    final response = await ApiService.getSettings();
+    if (response.isSuccess && response.data != null) {
+      _cachedSettings = response.data!;
+      return _cachedSettings;
+    }
+    
+    return null;
+  }
+  
+  // Check if anonymous posting is enabled
+  static Future<bool> isAnonymousPostingEnabled() async {
+    final settings = await getSettings();
+    return settings?.anonymousPostingEnabled ?? false;
+  }
+  
+  // Check if anonymous comments are enabled
+  static Future<bool> isAnonymousCommentsEnabled() async {
+    final settings = await getSettings();
+    return settings?.anonymousCommentsEnabled ?? false;
+  }
+  
+  // Clear cached settings (call when needed refresh)
+  static void clearCache() {
+    _cachedSettings = null;
+  }
+}
+```
+
+### Anonymous Post Creation Widget
+
+```dart
+// widgets/anonymous_post_options.dart
+import 'package:flutter/material.dart';
+import '../services/settings_service.dart';
+import '../services/auth_service.dart';
+
+enum PostType { public, anonymousMember, guest }
+
+class AnonymousPostOptions extends StatefulWidget {
+  final Function(PostType, String?) onPostTypeChanged;
+  
+  const AnonymousPostOptions({
+    Key? key,
+    required this.onPostTypeChanged,
+  }) : super(key: key);
+
+  @override
+  _AnonymousPostOptionsState createState() => _AnonymousPostOptionsState();
+}
+
+class _AnonymousPostOptionsState extends State<AnonymousPostOptions> {
+  PostType selectedType = PostType.public;
+  TextEditingController guestNameController = TextEditingController();
+  bool anonymousPostingEnabled = false;
+  bool isLoggedIn = false;
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+  
+  Future<void> _loadSettings() async {
+    final settings = await SettingsService.getSettings();
+    final authService = AuthService.instance;
+    
+    setState(() {
+      anonymousPostingEnabled = settings?.anonymousPostingEnabled ?? false;
+      isLoggedIn = authService.isLoggedIn;
+      
+      // If not logged in and anonymous posting disabled, force guest mode
+      if (!isLoggedIn && !anonymousPostingEnabled) {
+        selectedType = PostType.guest;
+      }
+    });
+    
+    _notifyParent();
+  }
+  
+  void _notifyParent() {
+    String? guestName = selectedType == PostType.guest && guestNameController.text.isNotEmpty
+        ? guestNameController.text
+        : null;
+    widget.onPostTypeChanged(selectedType, guestName);
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey.shade50,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'خيارات النشر',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+          
+          // Public post option (only for logged in users)
+          if (isLoggedIn) ...[
+            _buildPostOption(
+              type: PostType.public,
+              icon: Icons.person,
+              title: 'نشر باسمي الحقيقي',
+              subtitle: 'سيظهر اسمك وصورتك الشخصية',
+              color: Theme.of(context).primaryColor,
+            ),
+            const SizedBox(height: 8),
+          ],
+          
+          // Anonymous member option (only for logged in users)
+          if (isLoggedIn) ...[
+            _buildPostOption(
+              type: PostType.anonymousMember,
+              icon: Icons.visibility_off,
+              title: 'نشر مجهول (عضو)',
+              subtitle: 'ستبقى مسجل الدخول لكن بدون إظهار هويتك',
+              color: Colors.orange,
+            ),
+            const SizedBox(height: 8),
+          ],
+          
+          // Guest option (always available if anonymous posting enabled)
+          if (anonymousPostingEnabled) ...[
+            _buildPostOption(
+              type: PostType.guest,
+              icon: Icons.person_outline,
+              title: 'نشر كزائر مجهول',
+              subtitle: 'نشر بدون تسجيل دخول',
+              color: Colors.grey,
+            ),
+            
+            // Guest name field
+            if (selectedType == PostType.guest) ...[
+              const SizedBox(height: 12),
+              TextField(
+                controller: guestNameController,
+                decoration: const InputDecoration(
+                  hintText: 'اختر اسم مستعار (اختياري)',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                onChanged: (_) => _notifyParent(),
+              ),
+            ],
+          ],
+          
+          // Warning if anonymous posting is disabled
+          if (!anonymousPostingEnabled && !isLoggedIn) ...[
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                border: Border.all(color: Colors.red.shade200),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.red),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'النشر المجهول غير متاح حالياً. يرجى تسجيل الدخول.',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildPostOption({
+    required PostType type,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+  }) {
+    final isSelected = selectedType == type;
+    
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedType = type;
+        });
+        _notifyParent();
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: isSelected ? color : Colors.grey.shade300,
+            width: isSelected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Radio<PostType>(
+              value: type,
+              groupValue: selectedType,
+              onChanged: (value) {
+                setState(() {
+                  selectedType = value!;
+                });
+                _notifyParent();
+              },
+              activeColor: color,
+            ),
+            const SizedBox(width: 8),
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+### Enhanced Create Post Screen
+
+```dart
+// screens/posts/create_post_screen.dart
+import 'package:flutter/material.dart';
+import '../../widgets/anonymous_post_options.dart';
+import '../../services/post_service.dart';
+import '../../services/settings_service.dart';
+
+class CreatePostScreen extends StatefulWidget {
+  @override
+  _CreatePostScreenState createState() => _CreatePostScreenState();
+}
+
+class _CreatePostScreenState extends State<CreatePostScreen> {
+  final _contentController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _hashtagsController = TextEditingController();
+  
+  PostType selectedPostType = PostType.public;
+  String? guestName;
+  String selectedCategory = 'general';
+  bool isLoading = false;
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('إنشاء منشور'),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Post content
+            TextField(
+              controller: _contentController,
+              maxLines: 6,
+              decoration: const InputDecoration(
+                hintText: 'شارك مشكلتك أو تجربتك مع المجتمع...',
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.all(12),
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Category selection
+            const Text('الفئة', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              value: selectedCategory,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+              items: const [
+                DropdownMenuItem(value: 'complaint', child: Text('شكوى')),
+                DropdownMenuItem(value: 'experience', child: Text('تجربة')),
+                DropdownMenuItem(value: 'recommendation', child: Text('توصية')),
+                DropdownMenuItem(value: 'question', child: Text('سؤال')),
+                DropdownMenuItem(value: 'review', child: Text('مراجعة')),
+                DropdownMenuItem(value: 'general', child: Text('عامة')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  selectedCategory = value!;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            
+            // Location
+            TextField(
+              controller: _locationController,
+              decoration: const InputDecoration(
+                labelText: 'الموقع',
+                hintText: 'المدينة أو المنطقة',
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.all(12),
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Anonymous posting options
+            AnonymousPostOptions(
+              onPostTypeChanged: (type, name) {
+                setState(() {
+                  selectedPostType = type;
+                  guestName = name;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            
+            // Hashtags
+            TextField(
+              controller: _hashtagsController,
+              decoration: const InputDecoration(
+                labelText: 'الهاشتاغ',
+                hintText: 'مثال: مشكلة، حل، تجربة',
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.all(12),
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            // Submit button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : _submitPost,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _getPostIcon(),
+                          const SizedBox(width: 8),
+                          Text(_getPostButtonText()),
+                        ],
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Icon _getPostIcon() {
+    switch (selectedPostType) {
+      case PostType.public:
+        return const Icon(Icons.send);
+      case PostType.anonymousMember:
+        return const Icon(Icons.visibility_off);
+      case PostType.guest:
+        return const Icon(Icons.person_outline);
+    }
+  }
+  
+  String _getPostButtonText() {
+    switch (selectedPostType) {
+      case PostType.public:
+        return 'نشر المحتوى';
+      case PostType.anonymousMember:
+        return 'نشر مجهول';
+      case PostType.guest:
+        return 'نشر كزائر';
+    }
+  }
+  
+  Future<void> _submitPost() async {
+    if (_contentController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('يرجى كتابة محتوى المنشور')),
+      );
+      return;
+    }
+    
+    setState(() {
+      isLoading = true;
+    });
+    
+    try {
+      Map<String, dynamic> postData = {
+        'content': _contentController.text.trim(),
+        'category': selectedCategory,
+        'location': _locationController.text.trim(),
+        'hashtags': _hashtagsController.text.trim(),
+      };
+      
+      // Add post type specific fields
+      switch (selectedPostType) {
+        case PostType.public:
+          postData['is_anonymous'] = false;
+          break;
+        case PostType.anonymousMember:
+          postData['is_anonymous'] = true;
+          break;
+        case PostType.guest:
+          if (guestName?.isNotEmpty == true) {
+            postData['guest_name'] = guestName;
+          }
+          break;
+      }
+      
+      final success = await PostService.createPost(postData);
+      
+      if (success) {
+        Navigator.pop(context, true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تم نشر المحتوى بنجاح')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('فشل في نشر المحتوى')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('خطأ: ${e.toString()}')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+}
+```
+
+This implementation provides complete anonymous posting functionality with:
+
+1. **Settings management** to check if anonymous posting is enabled
+2. **Dynamic UI** that adapts based on user login status and settings
+3. **Three posting modes**: Public, Anonymous Member, Guest
+4. **Proper error handling** when anonymous posting is disabled
+5. **Guest name field** for anonymous visitors
+6. **Visual feedback** with different icons and colors for each mode
+
 The developer can use this as a complete starting point for the Ahjili Flutter app! 🚀
+
