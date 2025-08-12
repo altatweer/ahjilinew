@@ -1674,10 +1674,113 @@ POST /upload/avatar
                                 <span class="lang-en">⚡ Use caching for repeated data</span>
                             </li>
                             <li>
-                                <span class="lang-ar">🔐 تأكد من حالة تسجيل الدخول قبل استدعاء APIs المحمية</span>
-                                <span class="lang-en">🔐 Check login status before calling protected APIs</span>
+                                <a href="#auth-protection" style="text-decoration: none;">
+                                    <span class="lang-ar">🔐 تأكد من حالة تسجيل الدخول قبل استدعاء APIs المحمية</span>
+                                    <span class="lang-en">🔐 Check login status before calling protected APIs</span>
+                                </a>
                             </li>
                         </ul>
+                    </div>
+                    
+                    <!-- توضيح حماية APIs -->
+                    <div class="alert alert-info" id="auth-protection">
+                        <h6>
+                            <span class="lang-ar">🔐 شرح مفصل: حماية الـ APIs</span>
+                            <span class="lang-en">🔐 Detailed: API Protection</span>
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h7 class="text-success">
+                                    <span class="lang-ar">✅ APIs مفتوحة (بدون token):</span>
+                                    <span class="lang-en">✅ Public APIs (no token):</span>
+                                </h7>
+                                <div class="code-block" style="background: #e8f5e8; color: #2e7d32; font-size: 12px; padding: 8px;">
+                                    <code>
+GET /settings<br>
+GET /dashboard<br>  
+GET /posts<br>
+GET /posts/{id}<br>
+GET /posts/{id}/comments<br>
+GET /announcements<br>
+GET /profile/{user_id}<br>
+POST /auth/login<br>
+POST /auth/register
+                                    </code>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h7 class="text-danger">
+                                    <span class="lang-ar">🔒 APIs محمية (تحتاج token):</span>
+                                    <span class="lang-en">🔒 Protected APIs (need token):</span>
+                                </h7>
+                                <div class="code-block" style="background: #fdeaea; color: #c62828; font-size: 12px; padding: 8px;">
+                                    <code>
+POST /posts<br>
+POST /posts/{id}/comments<br>
+POST /posts/{id}/like<br>
+PUT /profile/update<br>
+POST /upload/image<br>
+POST /upload/avatar<br>
+POST /auth/logout<br>
+GET /auth/me
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h7>
+                                <span class="lang-ar">🧠 كيف يتحقق المطور من حالة تسجيل الدخول؟</span>
+                                <span class="lang-en">🧠 How does developer check login status?</span>
+                            </h7>
+                            <div class="code-block" style="font-size: 12px; margin-top: 8px;">
+                                <pre><code class="language-dart">
+// في Flutter - قبل استدعاء API محمي
+Future&lt;void&gt; createPost() async {
+  // 1️⃣ تحقق من وجود token
+  final token = await ApiService.getAuthToken();
+  if (token == null) {
+    // اعرض شاشة تسجيل الدخول
+    Navigator.push(context, LoginScreen());
+    return;
+  }
+  
+  // 2️⃣ استدعي API محمي
+  final result = await PostService.createPost(postData);
+  
+  // 3️⃣ تعامل مع أخطاء المصادقة
+  if (result.statusCode == 401) {
+    // انتهت صلاحية التوكن - اعرض تسجيل دخول
+    await ApiService.removeAuthToken();
+    Navigator.push(context, LoginScreen());
+  }
+}
+                                </code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 p-3" style="background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px;">
+                            <small>
+                                <strong>
+                                    <span class="lang-ar">📌 المطلوب من المطور:</span>
+                                    <span class="lang-en">📌 Required from developer:</span>
+                                </strong><br>
+                                <span class="lang-ar">
+                                    1️⃣ فحص وجود التوكن قبل APIs المحمية<br>
+                                    2️⃣ عرض شاشة تسجيل الدخول إذا لم يوجد<br>
+                                    3️⃣ معالجة خطأ 401 (انتهاء صلاحية التوكن)<br>
+                                    4️⃣ إزالة التوكن المنتهي الصلاحية
+                                </span>
+                                <span class="lang-en">
+                                    1️⃣ Check token exists before protected APIs<br>
+                                    2️⃣ Show login screen if no token<br>
+                                    3️⃣ Handle 401 error (token expired)<br>
+                                    4️⃣ Remove expired token
+                                </span>
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
