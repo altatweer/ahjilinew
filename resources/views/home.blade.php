@@ -621,6 +621,19 @@
                     {{ $posts->appends(request()->query())->links('custom.pagination') }}
                 </div>
             @endif
+            
+            <!-- زر تثبيت التطبيق في نهاية المحتوى -->
+            <div id="pwa-install-content-btn" class="pwa-install-content-bar mt-4" style="display: none;">
+                <div class="text-center">
+                    <button type="button" class="btn btn-success btn-lg shadow-lg px-5" onclick="handleContentInstall()" title="ثبت تطبيق احجيلي للشاشة الرئيسية">
+                        <i class="bi bi-download me-2"></i>
+                        <span class="install-text">ثبت التطبيق على الشاشة الرئيسية</span>
+                    </button>
+                    <div class="mt-2">
+                        <small class="text-muted">للوصول السريع والاستخدام بدون إنترنت</small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -793,11 +806,20 @@
         
         // إظهار زر التثبيت
         function showInstallButton() {
-            // التحقق من وجود زر التثبيت
+            // إظهار زر التثبيت في المحتوى بدلاً من العائم
+            const contentBtn = document.getElementById('pwa-install-content-btn');
+            
+            if (contentBtn) {
+                contentBtn.style.display = 'block';
+                console.log('📱 تم إظهار زر التثبيت في نهاية المحتوى');
+                return;
+            }
+            
+            // Fallback: إنشاء زر عائم إذا لم يوجد زر المحتوى
             let installBtn = document.getElementById('pwa-install-btn');
             
             if (!installBtn) {
-                // إنشاء زر التثبيت
+                // إنشاء زر التثبيت (احتياطي)
                 installBtn = document.createElement('button');
                 installBtn.id = 'pwa-install-btn';
                 installBtn.innerHTML = '📱 ثبت التطبيق';
@@ -842,6 +864,13 @@
         
         // إخفاء زر التثبيت
         function hideInstallButton() {
+            // إخفاء زر المحتوى
+            const contentBtn = document.getElementById('pwa-install-content-btn');
+            if (contentBtn) {
+                contentBtn.style.display = 'none';
+            }
+            
+            // إزالة الزر العائم (احتياطي)
             const installBtn = document.getElementById('pwa-install-btn');
             if (installBtn) {
                 installBtn.remove();
@@ -876,6 +905,23 @@
             } catch (error) {
                 console.error('❌ خطأ في التثبيت:', error);
                 showToast('حدث خطأ أثناء التثبيت', 'error');
+            }
+        }
+        
+        // دالة تثبيت من زر المحتوى
+        function handleContentInstall() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            if (isIOS) {
+                // إظهار تعليمات iOS
+                if (typeof showiOSInstallModal === 'function') {
+                    showiOSInstallModal();
+                } else {
+                    showIOSInstructions(); // Fallback
+                }
+            } else {
+                // محاولة التثبيت على Android وأنظمة أخرى
+                installPWA();
             }
         }
         
@@ -1165,6 +1211,40 @@
         @media (max-width: 576px) {
             body.has-install-bar .floating-add-btn {
                 bottom: 85px !important;
+            }
+        }
+        
+        /* تصميم زر التثبيت في المحتوى */
+        .pwa-install-content-bar {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #28a745;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .pwa-install-content-bar .btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .pwa-install-content-bar .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4) !important;
+            background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+        }
+        
+        @media (max-width: 768px) {
+            .pwa-install-content-bar {
+                padding: 15px;
+            }
+            
+            .pwa-install-content-bar .btn {
+                font-size: 14px;
+                padding: 12px 24px;
             }
         }
     </style>
