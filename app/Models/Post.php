@@ -137,4 +137,35 @@ class Post extends Model
     {
         return !is_null($this->featured_at);
     }
+
+    /**
+     * Hashtags methods
+     */
+    public function getHashtagsArrayAttribute(): array
+    {
+        if (empty($this->hashtags)) {
+            return [];
+        }
+        
+        // تنظيف وتنسيق الهاشتاغات
+        $hashtags = explode(',', $this->hashtags);
+        return array_filter(array_map('trim', $hashtags));
+    }
+
+    public function getFormattedHashtagsAttribute(): string
+    {
+        $hashtags = $this->hashtags_array;
+        if (empty($hashtags)) {
+            return '';
+        }
+        
+        return implode(' ', array_map(function($tag) {
+            return '#' . ltrim($tag, '#');
+        }, $hashtags));
+    }
+
+    public function scopeWithHashtag($query, $hashtag)
+    {
+        return $query->where('hashtags', 'LIKE', '%' . $hashtag . '%');
+    }
 }

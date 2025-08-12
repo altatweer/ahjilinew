@@ -99,6 +99,31 @@
             gap: 0.5rem;
         }
         
+        /* Hashtags Styling */
+        .hashtags-section {
+            border: 1px solid #dee2e6;
+        }
+        
+        .hashtag-badge {
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            color: #1976D2;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid #90CAF9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .hashtag-badge:hover {
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(25, 118, 210, 0.4);
+        }
+        
         .post-actions {
             display: flex;
             flex-wrap: wrap;
@@ -430,6 +455,25 @@
                         </div>
                     @endif
                 </div>
+                
+                <!-- Hashtags Display -->
+                @if($post->hashtags && trim($post->hashtags) !== '')
+                <div class="hashtags-section mt-3 p-3 bg-light rounded">
+                    <h6 class="text-muted mb-2">
+                        <i class="bi bi-hash"></i> الهاشتاغات:
+                    </h6>
+                    @php
+                        $hashtags = array_filter(array_map('trim', explode(',', $post->hashtags)));
+                    @endphp
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach($hashtags as $hashtag)
+                            <span class="hashtag-badge">
+                                #{{ ltrim($hashtag, '#') }}
+                            </span>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
                 
                 <div class="post-actions">
                     @auth

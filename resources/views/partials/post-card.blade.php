@@ -112,6 +112,21 @@
             <span>منذ {{ $post->created_at->diffForHumans() }}</span>
         </div>
         
+        <!-- Hashtags Display -->
+        @if($post->hashtags && trim($post->hashtags) !== '')
+        <div class="hashtags-container mt-2">
+            @php
+                $hashtags = array_filter(array_map('trim', explode(',', $post->hashtags)));
+            @endphp
+            @foreach($hashtags as $hashtag)
+                <span class="hashtag-badge me-1 mb-1 d-inline-block">
+                    #{{ ltrim($hashtag, '#') }}
+                </span>
+            @endforeach
+        </div>
+        @endif
+        </div>
+        
         <div class="post-stats">
             <div class="stat-item">
                 <i class="bi bi-chat"></i>

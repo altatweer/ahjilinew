@@ -285,6 +285,32 @@
             font-size: 0.8rem;
         }
         
+        /* Hashtags Styling */
+        .hashtags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+        
+        .hashtag-badge {
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            color: #1976D2;
+            padding: 0.2rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid #90CAF9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .hashtag-badge:hover {
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+        }
+        
         .footer {
             background: #2d3748;
             color: white;
