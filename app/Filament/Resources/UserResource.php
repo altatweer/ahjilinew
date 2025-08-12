@@ -139,7 +139,7 @@ class UserResource extends Resource
                     ->sortable()
                     ->copyable()
                     ->toggleable(),
-                Tables\Columns\BadgeColumn::make('role')
+                Tables\Columns\TextColumn::make('role')
                     ->label('الدور')
                     ->colors([
                         'secondary' => 'user',
@@ -154,7 +154,7 @@ class UserResource extends Resource
                         'super-admin' => 'مدير عام',
                         default => $state,
                     }),
-                Tables\Columns\BadgeColumn::make('account_type')
+                Tables\Columns\TextColumn::make('account_type')
                     ->label('نوع الحساب')
                     ->colors([
                         'secondary' => 'regular',

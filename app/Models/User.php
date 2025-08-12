@@ -16,7 +16,6 @@ class User extends Authenticatable
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'name', // for Filament compatibility
         'username',
         'display_name',
         'email',
@@ -88,6 +87,14 @@ class User extends Authenticatable
     public function settings(): HasOne
     {
         return $this->hasOne(UserSetting::class);
+    }
+
+    /**
+     * Accessors for Filament compatibility
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->display_name ?? $this->username;
     }
 
     /**
