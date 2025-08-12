@@ -201,19 +201,267 @@
             }
         };
         
+        // فحص المتصفحات الداخلية لتطبيقات التواصل الاجتماعي
+        function detectInAppBrowser() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // فحص التطبيقات الشائعة
+            const inAppBrowsers = {
+                instagram: /Instagram/i.test(userAgent),
+                facebook: /FBAN|FBAV|FB_IAB/i.test(userAgent),
+                twitter: /Twitter/i.test(userAgent),
+                tiktok: /TikTok/i.test(userAgent),
+                snapchat: /Snapchat/i.test(userAgent),
+                linkedin: /LinkedInApp/i.test(userAgent),
+                telegram: /Telegram/i.test(userAgent),
+                whatsapp: /WhatsApp/i.test(userAgent),
+                pinterest: /Pinterest/i.test(userAgent),
+                reddit: /RedditClient/i.test(userAgent),
+                wechat: /MicroMessenger/i.test(userAgent),
+                line: /Line/i.test(userAgent),
+                // فحص عام للمتصفحات الداخلية
+                webview: /WebView|(iPhone|iPod|iPad)(?!.*Safari)|Android.*(wv|\.0\.0\.0)/i.test(userAgent)
+            };
+            
+            // العثور على التطبيق المحدد
+            for (const [app, detected] of Object.entries(inAppBrowsers)) {
+                if (detected && app !== 'webview') {
+                    return { isInApp: true, app: app, displayName: getAppDisplayName(app) };
+                }
+            }
+            
+            // فحص WebView عام
+            if (inAppBrowsers.webview) {
+                return { isInApp: true, app: 'webview', displayName: 'التطبيق' };
+            }
+            
+            return { isInApp: false, app: null, displayName: null };
+        }
+        
+        // أسماء التطبيقات للعرض
+        function getAppDisplayName(app) {
+            const names = {
+                instagram: 'Instagram',
+                facebook: 'Facebook',
+                twitter: 'Twitter',
+                tiktok: 'TikTok',
+                snapchat: 'Snapchat',
+                linkedin: 'LinkedIn',
+                telegram: 'Telegram',
+                whatsapp: 'WhatsApp',
+                pinterest: 'Pinterest',
+                reddit: 'Reddit',
+                wechat: 'WeChat',
+                line: 'LINE'
+            };
+            return names[app] || 'التطبيق';
+        }
+        
+        // مودال لفتح المتصفح الخارجي
+        function showOpenInBrowserModal(appName = 'التطبيق') {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const currentUrl = window.location.href;
+            
+            const modalHtml = `
+                <div class="modal fade" id="openInBrowserModal" tabindex="-1" style="z-index: 1055;">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="border-radius: 15px; border: none;">
+                            <div class="modal-header border-0 text-center">
+                                <div class="w-100">
+                                    <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+                                    <h5 class="modal-title">ثبت تطبيق احجيلي</h5>
+                                    <p class="text-muted mb-0">للحصول على أفضل تجربة</p>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <div class="alert alert-warning" style="border-radius: 10px;">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    <strong>أنت تتصفح من داخل ${appName}</strong><br>
+                                    <small>المتصفحات الداخلية لا تدعم تثبيت التطبيقات</small>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h6 class="mb-3">💡 لتثبيت التطبيق، تحتاج لفتح الرابط في:</h6>
+                                    <div class="row g-2">
+                                        ${isIOS ? `
+                                        <div class="col-6">
+                                            <div class="card border-primary" style="cursor: pointer;" onclick="openInSafari()">
+                                                <div class="card-body text-center py-3">
+                                                    <div style="font-size: 2rem;">🧭</div>
+                                                    <div><strong>Safari</strong></div>
+                                                    <small class="text-muted">الأفضل لـ iOS</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="card border-success" style="cursor: pointer;" onclick="openInChrome()">
+                                                <div class="card-body text-center py-3">
+                                                    <div style="font-size: 2rem;">🌐</div>
+                                                    <div><strong>Chrome</strong></div>
+                                                    <small class="text-muted">متصفح بديل</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        ` : `
+                                        <div class="col-6">
+                                            <div class="card border-success" style="cursor: pointer;" onclick="openInChrome()">
+                                                <div class="card-body text-center py-3">
+                                                    <div style="font-size: 2rem;">🌐</div>
+                                                    <div><strong>Chrome</strong></div>
+                                                    <small class="text-muted">الأفضل لـ Android</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="card border-info" style="cursor: pointer;" onclick="openInFirefox()">
+                                                <div class="card-body text-center py-3">
+                                                    <div style="font-size: 2rem;">🦊</div>
+                                                    <div><strong>Firefox</strong></div>
+                                                    <small class="text-muted">متصفح بديل</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        `}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>أو انسخ الرابط:</strong></label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="urlToCopy" value="${currentUrl}" readonly>
+                                        <button class="btn btn-outline-primary" type="button" onclick="copyUrlToClipboard()">
+                                            <i class="bi bi-clipboard"></i> نسخ
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                ${isIOS ? `
+                                <div class="alert alert-info" style="border-radius: 10px;">
+                                    <strong>📱 طريقة سريعة لـ iOS:</strong><br>
+                                    اضغط <span class="badge bg-primary">⋯</span> في ${appName} ← اختر "فتح في Safari"
+                                </div>
+                                ` : `
+                                <div class="alert alert-info" style="border-radius: 10px;">
+                                    <strong>📱 طريقة سريعة لـ Android:</strong><br>
+                                    اضغط <span class="badge bg-primary">⋮</span> في ${appName} ← اختر "فتح في Chrome"
+                                </div>
+                                `}
+                            </div>
+                            <div class="modal-footer border-0 justify-content-center">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                    ربما لاحقاً
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // إزالة المودال السابق إن وجد
+            const existingModal = document.getElementById('openInBrowserModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // إضافة المودال الجديد
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // إظهار المودال
+            const modal = new bootstrap.Modal(document.getElementById('openInBrowserModal'));
+            modal.show();
+            
+            // إزالة المودال بعد الإغلاق
+            document.getElementById('openInBrowserModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+            });
+        }
+        
+        // فتح في Safari (iOS)
+        window.openInSafari = function() {
+            const currentUrl = window.location.href;
+            // محاولة فتح في Safari
+            window.location.href = currentUrl.replace(/^https?:\/\//, 'x-web-search://');
+            // fallback
+            setTimeout(() => {
+                copyUrlToClipboard();
+                alert('تم نسخ الرابط! الصق الرابط في Safari لتثبيت التطبيق');
+            }, 1000);
+        };
+        
+        // فتح في Chrome
+        window.openInChrome = function() {
+            const currentUrl = window.location.href;
+            // محاولة فتح في Chrome
+            const chromeUrl = 'googlechrome://' + currentUrl.replace(/^https?:\/\//, '');
+            window.location.href = chromeUrl;
+            // fallback
+            setTimeout(() => {
+                copyUrlToClipboard();
+                alert('تم نسخ الرابط! الصق الرابط في Chrome لتثبيت التطبيق');
+            }, 1000);
+        };
+        
+        // فتح في Firefox  
+        window.openInFirefox = function() {
+            const currentUrl = window.location.href;
+            // محاولة فتح في Firefox
+            const firefoxUrl = 'firefox://' + currentUrl.replace(/^https?:\/\//, '');
+            window.location.href = firefoxUrl;
+            // fallback
+            setTimeout(() => {
+                copyUrlToClipboard();
+                alert('تم نسخ الرابط! الصق الرابط في Firefox لتثبيت التطبيق');
+            }, 1000);
+        };
+        
+        // نسخ الرابط
+        window.copyUrlToClipboard = function() {
+            const urlInput = document.getElementById('urlToCopy');
+            if (urlInput) {
+                urlInput.select();
+                document.execCommand('copy');
+                
+                // تحديث نص الزر
+                const copyBtn = urlInput.nextElementSibling;
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="bi bi-check"></i> تم النسخ!';
+                copyBtn.classList.remove('btn-outline-primary');
+                copyBtn.classList.add('btn-success');
+                
+                // إعادة النص الأصلي بعد ثانيتين
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.classList.remove('btn-success');
+                    copyBtn.classList.add('btn-outline-primary');
+                }, 2000);
+                
+                // إظهار toast
+                if (typeof showToast === 'function') {
+                    showToast('تم نسخ الرابط! الصق في المتصفح الرئيسي', 'success');
+                }
+            }
+        };
+        
         // التعامل مع النقر على الزر العائم
         window.handleFloatingInstall = function() {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            const isInAppBrowser = /WebView|(iPhone|iPod|iPad)(?!.*Safari)/i.test(navigator.userAgent);
+            const browserInfo = detectInAppBrowser();
             
-            console.log('🎯 النقر على زر التثبيت العائم');
+            console.log('🎯 النقر على زر التثبيت العائم', {
+                isIOS,
+                browserInfo
+            });
             
+            // إذا كان في متصفح داخلي لتطبيق
+            if (browserInfo.isInApp) {
+                console.log(`🚨 متصفح داخلي مكتشف: ${browserInfo.displayName}`);
+                showOpenInBrowserModal(browserInfo.displayName);
+                return;
+            }
+            
+            // إذا كان iOS وفي متصفح عادي
             if (isIOS) {
-                if (isInAppBrowser) {
-                    window.pwaFloatingButtonManager.showToast('للتثبيت: افتح الموقع في Safari مباشرة', 'warning');
-                    return;
-                }
-                
                 // إظهار تعليمات iOS
                 if (typeof showiOSInstallModal === 'function') {
                     showiOSInstallModal();
