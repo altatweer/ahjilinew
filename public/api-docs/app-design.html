@@ -554,22 +554,46 @@
         .language-toggle {
             position: fixed;
             top: 20px;
-            left: 20px;
-            z-index: 1001;
-            background: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 10px 15px;
+            border-radius: 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            border: 2px solid white;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
         }
         
         .language-toggle button {
-            background: var(--primary-color);
-            color: white;
+            background: white;
+            color: var(--primary-color);
             border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            min-width: 80px;
+        }
+        
+        .language-toggle button:hover {
+            transform: scale(1.05);
+            background: #f8f9fa;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         
         /* Language Content */
@@ -1490,6 +1514,13 @@
             }
             
             console.log('🌐 Language switched to:', isEnglish ? 'Arabic' : 'English');
+            
+            // إخفاء زر اللغة بعد التبديل لمدة قصيرة
+            const toggleBtn = document.querySelector('.language-toggle');
+            toggleBtn.style.opacity = '0.3';
+            setTimeout(() => {
+                toggleBtn.style.opacity = '1';
+            }, 2000);
         }
         
         // Update form placeholders based on language
