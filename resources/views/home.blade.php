@@ -14,11 +14,23 @@
     <!-- PWA Theme -->
     <meta name="theme-color" content="#5C7D99">
     <meta name="msapplication-navbutton-color" content="#5C7D99">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- iOS Safari PWA Configuration -->
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="احجيلي">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Android PWA Configuration -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="احجيلي">
+    
+    <!-- Windows PWA Configuration -->
+    <meta name="msapplication-TileColor" content="#5C7D99">
+    <meta name="msapplication-TileImage" content="/images/pwa/icon-144x144.png">
+    <meta name="msapplication-starturl" content="/">
+    <meta name="msapplication-navbutton-color" content="#5C7D99">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -28,9 +40,22 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/images/pwa/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/images/pwa/icon-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/images/pwa/icon-512x512.png">
+    
+    <!-- iOS Apple Touch Icons -->
     <link rel="apple-touch-icon" href="/images/pwa/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/images/pwa/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/images/pwa/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/images/pwa/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/images/pwa/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/images/pwa/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/images/pwa/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/images/pwa/icon-144x144.png">
     <link rel="apple-touch-icon" sizes="152x152" href="/images/pwa/icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/pwa/icon-180x180.png">
+    
+    <!-- iOS Startup Images -->
+    <link rel="apple-touch-startup-image" href="/images/pwa/icon-512x512.png">
+    
     <!-- Fallback favicon -->
     <link rel="shortcut icon" href="/images/pwa/favicon-32x32.png" type="image/png">
     
@@ -856,20 +881,117 @@
         
         // إظهار ترويج التثبيت
         function showInstallPromotion() {
+            // فحص النظام والمتصفح
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isStandalone = window.navigator.standalone;
+            const isInAppBrowser = /WebView|(iPhone|iPod|iPad)(?!.*Safari)/i.test(navigator.userAgent);
+            
+            console.log('🔍 PWA Detection:', {
+                isIOS,
+                isStandalone,
+                isInAppBrowser,
+                pwaInstalled,
+                userAgent: navigator.userAgent
+            });
+            
             // عدم إظهار الترويج إذا كان مثبت أو تم رفضه مؤخراً
             const lastPromotion = localStorage.getItem('pwa-promotion-dismissed');
             const now = new Date().getTime();
             
-            if (pwaInstalled || (lastPromotion && now - parseInt(lastPromotion) < 7 * 24 * 60 * 60 * 1000)) {
+            if (pwaInstalled || isStandalone || (lastPromotion && now - parseInt(lastPromotion) < 7 * 24 * 60 * 60 * 1000)) {
                 return;
             }
             
-            // إظهار رسالة ترويجية بعد 10 ثواني
+            // iOS Safari - تعليمات خاصة
+            if (isIOS) {
+                if (isInAppBrowser) {
+                    setTimeout(() => {
+                        showToast('للتثبيت: افتح الموقع في Safari مباشرة', 'warning');
+                    }, 3000);
+                    return;
+                }
+                
+                // إظهار زر التثبيت وتعليمات iOS
+                showInstallButton();
+                setTimeout(() => {
+                    showiOSInstallModal();
+                }, 8000);
+                return;
+            }
+            
+            // Android وأجهزة أخرى
+            showInstallButton();
             setTimeout(() => {
                 if (!pwaInstalled && !document.getElementById('pwa-install-btn')) {
                     showInstallPromotionModal();
                 }
             }, 10000);
+        }
+        
+        // مودال تعليمات iOS
+        function showiOSInstallModal() {
+            const modalHtml = `
+                <div class="modal fade" id="iosInstallModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="border-radius: 15px;">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title">🍎 تثبيت احجيلي على iOS</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="card border-primary">
+                                            <div class="card-body">
+                                                <div class="badge bg-primary rounded-pill mb-3">
+                                                    <i class="bi bi-1-circle me-2"></i>الخطوة الأولى
+                                                </div>
+                                                <div style="font-size: 2.5rem; color: #007AFF;">
+                                                    <i class="bi bi-box-arrow-up"></i>
+                                                </div>
+                                                <p class="mt-2 mb-0">اضغط زر <strong>المشاركة</strong> في Safari</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="card border-success">
+                                            <div class="card-body">
+                                                <div class="badge bg-success rounded-pill mb-3">
+                                                    <i class="bi bi-2-circle me-2"></i>الخطوة الثانية
+                                                </div>
+                                                <div style="font-size: 2.5rem; color: #28A745;">
+                                                    <i class="bi bi-plus-square"></i>
+                                                </div>
+                                                <p class="mt-2 mb-0">اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info mt-4">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    سيتم إضافة أيقونة احجيلي الجميلة لشاشتك الرئيسية!
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">
+                                    <i class="bi bi-check-circle me-2"></i>فهمت! سأقوم بالتثبيت
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = new bootstrap.Modal(document.getElementById('iosInstallModal'));
+            modal.show();
+            
+            // إزالة المودال بعد الإغلاق
+            document.getElementById('iosInstallModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+            });
         }
         
         // إظهار مودال الترويج
