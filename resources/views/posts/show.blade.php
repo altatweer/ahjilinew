@@ -845,6 +845,9 @@
             });
         }
     </script>
+
+    <!-- زر التثبيت العائم -->
+    @include('partials.pwa-install-button')
 </body>
 </html>
 

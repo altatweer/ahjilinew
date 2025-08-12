@@ -487,6 +487,9 @@
             // You can add a character counter display here if needed
         });
     </script>
+
+    <!-- زر التثبيت العائم -->
+    @include('partials.pwa-install-button')
 </body>
 </html>
 
