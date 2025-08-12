@@ -90,14 +90,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Accessors for Filament compatibility
-     */
-    public function getNameAttribute(): string
-    {
-        return $this->display_name ?? $this->username;
-    }
-
-    /**
      * Helper methods
      */
     public function getLoginCredential(): ?string
