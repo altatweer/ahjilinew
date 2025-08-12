@@ -94,6 +94,46 @@ class ApiService {
       fromJson: (json) => AppSettings.fromJson(json),
     );
   }
+
+  // Get dashboard data for home page
+  static Future<ApiResponse<DashboardData>> getDashboard() async {
+    return await get<DashboardData>(
+      '/dashboard',
+      withAuth: false,
+      fromJson: (json) => DashboardData.fromJson(json),
+    );
+  }
+
+  // Get user profile data
+  static Future<ApiResponse<UserProfile>> getUserProfile(int userId) async {
+    return await get<UserProfile>(
+      '/profile/$userId',
+      withAuth: false,
+      fromJson: (json) => UserProfile.fromJson(json),
+    );
+  }
+
+  // Get app announcements
+  static Future<ApiResponse<List<Announcement>>> getAnnouncements({
+    bool activeOnly = true,
+    String? type,
+  }) async {
+    Map<String, dynamic> params = {
+      'active_only': activeOnly.toString(),
+    };
+    if (type != null) {
+      params['type'] = type;
+    }
+
+    return await get<List<Announcement>>(
+      '/announcements',
+      queryParams: params,
+      withAuth: false,
+      fromJson: (json) => (json['announcements'] as List)
+          .map((item) => Announcement.fromJson(item))
+          .toList(),
+    );
+  }
   
   // Get headers with auth token
   static Future<Map<String, String>> getHeaders({bool withAuth = true}) async {
@@ -2027,14 +2067,51 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 }
 ```
 
-This implementation provides complete anonymous posting functionality with:
+## 📱 App Screens API Usage Summary
 
-1. **Settings management** to check if anonymous posting is enabled
-2. **Dynamic UI** that adapts based on user login status and settings
-3. **Three posting modes**: Public, Anonymous Member, Guest
-4. **Proper error handling** when anonymous posting is disabled
-5. **Guest name field** for anonymous visitors
-6. **Visual feedback** with different icons and colors for each mode
+### 🏠 Home Screen APIs:
+```dart
+// When user opens the app
+1. GET /settings          // Check app configuration
+2. GET /dashboard         // Get stats and latest posts  
+3. GET /announcements     // Get important announcements
+4. GET /posts?page=1      // Load recent posts
+```
 
-The developer can use this as a complete starting point for the Ahjili Flutter app! 🚀
+### 📄 Post Detail Screen APIs:
+```dart
+// When user clicks on a post
+1. GET /posts/{id}               // Get full post details
+2. GET /posts/{id}/comments      // Load all comments
+3. POST /posts/{id}/like         // When user likes
+4. POST /posts/{id}/comments     // When user comments
+```
+
+### ✏️ Create Post Screen APIs:
+```dart
+// When user wants to create post
+1. GET /settings                 // Check if anonymous posting allowed
+2. POST /upload/image            // Upload image (if any)
+3. POST /posts                   // Create the post
+```
+
+### 👤 Profile Screen APIs:
+```dart
+// When user views profile
+1. GET /profile/{user_id}        // Get user profile data
+2. GET /users/{id}/posts         // Get user's posts
+3. PUT /profile/update           // Update profile (if own profile)
+4. POST /upload/avatar           // Change avatar (if own profile)
+```
+
+### 🔐 Authentication APIs:
+```dart
+// For login/register
+POST /auth/login                 // Login
+POST /auth/register              // Register  
+POST /auth/logout                // Logout
+GET /auth/me                     // Get current user info
+```
+
+**🎯 That's it! Simple and clear for the developer!** 🚀
 

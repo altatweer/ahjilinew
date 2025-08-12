@@ -1200,6 +1200,10 @@
                         <span class="lang-ar">خيارات النشر</span>
                         <span class="lang-en">Posting Options</span>
                     </label>
+                    
+                    <!-- حالة تسجيل الدخول -->
+                    <div id="login-status"></div>
+                    
                     <div style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: #f8f9fa;">
                         
                         <!-- خيار النشر باسم العضو -->
@@ -1655,6 +1659,73 @@
             });
         }
 
+        // محاكاة حالة تسجيل الدخول (في التطبيق الحقيقي ستأتي من API)
+        let isUserLoggedIn = Math.random() > 0.5; // محاكاة عشوائية
+        
+        // تحديث خيارات النشر بناءً على حالة تسجيل الدخول
+        function updatePostingOptions() {
+            const publicOption = document.querySelector('#public-post').closest('div');
+            const anonymousMemberOption = document.querySelector('#anonymous-member').closest('div');
+            const guestOption = document.querySelector('#guest-post').closest('div');
+            const loginStatus = document.getElementById('login-status');
+            
+            if (isUserLoggedIn) {
+                // للمسجل دخول: إظهار خيارات الأعضاء فقط
+                publicOption.style.display = 'flex';
+                anonymousMemberOption.style.display = 'flex';
+                guestOption.style.display = 'none';
+                
+                // تعيين الخيار الافتراضي للعضو
+                document.getElementById('public-post').checked = true;
+                
+                // تحديث حالة تسجيل الدخول
+                loginStatus.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #e8f5e8; border: 1px solid #4caf50; border-radius: 6px; margin-bottom: 12px;">
+                        <i class="bi bi-check-circle-fill" style="color: #4caf50;"></i>
+                        <span style="color: #2e7d32; font-weight: 500;">
+                            <span class="lang-ar">مسجل دخول كعضو</span>
+                            <span class="lang-en">Logged in as member</span>
+                        </span>
+                    </div>
+                `;
+            } else {
+                // لغير المسجل: إظهار خيار الزائر فقط
+                publicOption.style.display = 'none';
+                anonymousMemberOption.style.display = 'none';
+                guestOption.style.display = 'flex';
+                
+                // تعيين الخيار الافتراضي للزائر
+                document.getElementById('guest-post').checked = true;
+                document.getElementById('guest-name-field').style.display = 'block';
+                
+                // تحديث حالة تسجيل الدخول
+                loginStatus.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #fff3e0; border: 1px solid #ff9800; border-radius: 6px; margin-bottom: 12px;">
+                        <i class="bi bi-person-circle" style="color: #f57c00;"></i>
+                        <span style="color: #ef6c00; font-weight: 500;">
+                            <span class="lang-ar">زائر غير مسجل</span>
+                            <span class="lang-en">Guest visitor</span>
+                        </span>
+                        <button onclick="simulateLogin()" style="margin-right: auto; background: #ff9800; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                            <span class="lang-ar">تسجيل دخول</span>
+                            <span class="lang-en">Login</span>
+                        </button>
+                    </div>
+                `;
+            }
+            
+            // تحديث زر النشر
+            setTimeout(() => {
+                updatePublishButton();
+            }, 100);
+        }
+        
+        // محاكاة تسجيل الدخول
+        function simulateLogin() {
+            isUserLoggedIn = !isUserLoggedIn;
+            updatePostingOptions();
+        }
+
         // تحديث نص زر النشر بناءً على نوع النشر
         function updatePublishButton() {
             const selectedType = document.querySelector('input[name="post-type"]:checked').value;
@@ -1692,6 +1763,9 @@
             
             // Initialize post type functionality
             handlePostTypeChange();
+            
+            // Initialize posting options based on login status
+            updatePostingOptions();
             
             // Set initial publish button text
             setTimeout(() => {

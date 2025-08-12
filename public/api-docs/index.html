@@ -603,6 +603,198 @@ Future&lt;void&gt; checkAppSettings() async {
                 </div>
             </div>
 
+            <!-- App Pages Endpoints -->
+            <h3 class="h3 mb-3 mt-5">
+                <span class="lang-ar">📱 طرق صفحات التطبيق</span>
+                <span class="lang-en">📱 App Pages Endpoints</span>
+            </h3>
+
+            <!-- Dashboard/Home Page -->
+            <div class="api-endpoint">
+                <div class="endpoint-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="method-badge method-get">GET</span>
+                            <code class="ms-2">/dashboard</code>
+                        </div>
+                        <small class="text-muted">
+                            <span class="lang-ar">بيانات الصفحة الرئيسية</span>
+                            <span class="lang-en">Home Dashboard Data</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="endpoint-body">
+                    <p>
+                        <span class="lang-ar">🌐 <strong>مفتوح للجميع:</strong> لا يتطلب مصادقة</span>
+                        <span class="lang-en">🌐 <strong>Public Access:</strong> No authentication required</span>
+                    </p>
+                    
+                    <div class="response-example">
+                        <h6>
+                            <span class="lang-ar">✅ مثال الاستجابة</span>
+                            <span class="lang-en">✅ Response Example</span>
+                        </h6>
+                        <div class="code-block">
+                            <pre><code class="language-json">{
+  "success": true,
+  "data": {
+    "stats": {
+      "total_posts": 1247,
+      "total_comments": 3856,
+      "total_users": 423,
+      "online_users": 47
+    },
+    "latest_posts": [
+      {
+        "id": 123,
+        "content": "منشور حديث...",
+        "category": "complaint",
+        "created_at": "2025-01-12T15:30:00Z",
+        "user": {
+          "id": 1,
+          "display_name": "محمد أحمد",
+          "avatar_url": "https://ahjili.com/storage/avatars/user1.jpg"
+        },
+        "likes_count": 15,
+        "comments_count": 8
+      }
+    ],
+    "trending_posts": [
+      {
+        "id": 456,
+        "content": "منشور شائع...",
+        "category": "experience",
+        "trending_score": 87.5,
+        "created_at": "2025-01-11T20:15:00Z"
+      }
+    ],
+    "announcements": [
+      {
+        "id": 1,
+        "title": "تحديث جديد للتطبيق",
+        "message": "تم إضافة ميزات جديدة رائعة",
+        "type": "info",
+        "show_until": "2025-01-20T00:00:00Z"
+      }
+    ],
+    "categories_stats": {
+      "complaint": 456,
+      "experience": 289,
+      "recommendation": 178,
+      "question": 234,
+      "review": 90
+    }
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Profile Data -->
+            <div class="api-endpoint">
+                <div class="endpoint-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="method-badge method-get">GET</span>
+                            <code class="ms-2">/profile/{user_id}</code>
+                        </div>
+                        <small class="text-muted">
+                            <span class="lang-ar">بيانات الملف الشخصي</span>
+                            <span class="lang-en">User Profile Data</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="endpoint-body">
+                    <div class="response-example">
+                        <h6>
+                            <span class="lang-ar">✅ مثال الاستجابة</span>
+                            <span class="lang-en">✅ Response Example</span>
+                        </h6>
+                        <div class="code-block">
+                            <pre><code class="language-json">{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "mohammed_ahmed",
+      "display_name": "محمد أحمد الطائي",
+      "bio": "مهتم بحل المشاكل المجتمعية",
+      "location": "بغداد، العراق",
+      "avatar_url": "https://ahjili.com/storage/avatars/user1.jpg",
+      "joined_date": "2024-06-15T10:00:00Z",
+      "last_active": "2025-01-12T16:30:00Z"
+    },
+    "stats": {
+      "posts_count": 45,
+      "comments_count": 128,
+      "likes_received": 567,
+      "helpful_votes": 89,
+      "followers_count": 23,
+      "following_count": 67
+    },
+    "badges": [
+      {
+        "id": 1,
+        "name": "مساعد مجتمعي",
+        "description": "ساعد أكثر من 50 شخص",
+        "icon": "🏆",
+        "earned_at": "2024-12-01T00:00:00Z"
+      }
+    ],
+    "recent_activity": [
+      {
+        "type": "post_created",
+        "post_id": 123,
+        "content_preview": "شاركت تجربة جديدة...",
+        "timestamp": "2025-01-12T14:00:00Z"
+      },
+      {
+        "type": "comment_posted",
+        "post_id": 456,
+        "comment_preview": "نصيحة مفيدة...",
+        "timestamp": "2025-01-12T13:15:00Z"
+      }
+    ]
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- App Announcements -->
+            <div class="api-endpoint">
+                <div class="endpoint-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="method-badge method-get">GET</span>
+                            <code class="ms-2">/announcements</code>
+                        </div>
+                        <small class="text-muted">
+                            <span class="lang-ar">إعلانات التطبيق</span>
+                            <span class="lang-en">App Announcements</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="endpoint-body">
+                    <h6>
+                        <span class="lang-ar">📋 معاملات الاستعلام</span>
+                        <span class="lang-en">📋 Query Parameters</span>
+                    </h6>
+                    <ul>
+                        <li><code>active_only</code> - 
+                            <span class="lang-ar">الإعلانات النشطة فقط (افتراضي: true)</span>
+                            <span class="lang-en">Active announcements only (default: true)</span>
+                        </li>
+                        <li><code>type</code> - 
+                            <span class="lang-ar">نوع الإعلان: info, warning, success, update</span>
+                            <span class="lang-en">Announcement type: info, warning, success, update</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- Posts Endpoints -->
             <h3 class="h3 mb-3 mt-5">
                 <span class="lang-ar">📝 طرق المنشورات</span>
@@ -1353,6 +1545,141 @@ Future&lt;void&gt; checkAppSettings() async {
                         <span class="lang-en">🔄 Automatic refresh when returning to app</span>
                     </li>
                 </ul>
+            </div>
+        </section>
+
+        <!-- App Screens API Mapping -->
+        <section class="mb-5">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <span class="lang-ar">📱 دليل صفحات التطبيق والـ APIs</span>
+                        <span class="lang-en">📱 App Screens & APIs Guide</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100" style="border-left: 4px solid var(--primary-color);">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="bi bi-house-door" style="color: var(--primary-color);"></i>
+                                        <span class="lang-ar">🏠 الصفحة الرئيسية</span>
+                                        <span class="lang-en">🏠 Home Screen</span>
+                                    </h6>
+                                    <div class="code-block" style="font-size: 13px;">
+                                        <code>
+GET /dashboard<br>
+GET /posts?page=1<br>
+GET /announcements<br>
+GET /settings
+                                        </code>
+                                    </div>
+                                    <small class="text-muted">
+                                        <span class="lang-ar">إحصائيات + آخر المنشورات + إعلانات + إعدادات</span>
+                                        <span class="lang-en">Stats + Latest posts + Announcements + Settings</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100" style="border-left: 4px solid var(--secondary-color);">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="bi bi-file-earmark-text" style="color: var(--secondary-color);"></i>
+                                        <span class="lang-ar">📄 تفاصيل المنشور</span>
+                                        <span class="lang-en">📄 Post Detail</span>
+                                    </h6>
+                                    <div class="code-block" style="font-size: 13px;">
+                                        <code>
+GET /posts/{id}<br>
+GET /posts/{id}/comments<br>
+POST /posts/{id}/like<br>
+POST /posts/{id}/comments
+                                        </code>
+                                    </div>
+                                    <small class="text-muted">
+                                        <span class="lang-ar">المنشور + التعليقات + الإعجاب + تعليق جديد</span>
+                                        <span class="lang-en">Post + Comments + Like + New comment</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100" style="border-left: 4px solid var(--success-color);">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="bi bi-plus-circle" style="color: var(--success-color);"></i>
+                                        <span class="lang-ar">✏️ إنشاء منشور</span>
+                                        <span class="lang-en">✏️ Create Post</span>
+                                    </h6>
+                                    <div class="code-block" style="font-size: 13px;">
+                                        <code>
+GET /settings<br>
+POST /posts<br>
+POST /upload/image
+                                        </code>
+                                    </div>
+                                    <small class="text-muted">
+                                        <span class="lang-ar">فحص الإعدادات + إنشاء منشور + رفع صورة</span>
+                                        <span class="lang-en">Check settings + Create post + Upload image</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100" style="border-left: 4px solid var(--info-color);">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="bi bi-person-circle" style="color: var(--info-color);"></i>
+                                        <span class="lang-ar">👤 الملف الشخصي</span>
+                                        <span class="lang-en">👤 Profile</span>
+                                    </h6>
+                                    <div class="code-block" style="font-size: 13px;">
+                                        <code>
+GET /profile/{user_id}<br>
+GET /users/{id}/posts<br>
+PUT /profile/update<br>
+POST /upload/avatar
+                                        </code>
+                                    </div>
+                                    <small class="text-muted">
+                                        <span class="lang-ar">بيانات المستخدم + منشوراته + تعديل + صورة</span>
+                                        <span class="lang-en">User data + Posts + Update + Avatar</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h6>
+                            <span class="lang-ar">💡 نصائح للمطور</span>
+                            <span class="lang-en">💡 Developer Tips</span>
+                        </h6>
+                        <ul class="mb-0">
+                            <li>
+                                <span class="lang-ar">🚀 ابدأ بـ <code>/settings</code> أولاً لمعرفة الإعدادات</span>
+                                <span class="lang-en">🚀 Start with <code>/settings</code> first to know configurations</span>
+                            </li>
+                            <li>
+                                <span class="lang-ar">📱 كل صفحة تحتاج فقط 2-4 API calls بسيطة</span>
+                                <span class="lang-en">📱 Each screen needs only 2-4 simple API calls</span>
+                            </li>
+                            <li>
+                                <span class="lang-ar">⚡ استخدم caching للبيانات المتكررة</span>
+                                <span class="lang-en">⚡ Use caching for repeated data</span>
+                            </li>
+                            <li>
+                                <span class="lang-ar">🔐 تأكد من حالة تسجيل الدخول قبل استدعاء APIs المحمية</span>
+                                <span class="lang-en">🔐 Check login status before calling protected APIs</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </section>
 
