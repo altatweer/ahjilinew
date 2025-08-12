@@ -803,9 +803,9 @@
                 installBtn.innerHTML = '📱 ثبت التطبيق';
                 installBtn.className = 'btn btn-success position-fixed';
                 installBtn.style.cssText = `
-                    bottom: 20px;
-                    left: 20px;
-                    z-index: 1050;
+                    bottom: 150px;
+                    right: 20px;
+                    z-index: 1040;
                     border-radius: 25px;
                     padding: 10px 20px;
                     font-weight: 600;
