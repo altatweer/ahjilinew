@@ -78,14 +78,26 @@ class CommentController extends Controller
                 ->with('error', 'يجب التسجيل لإضافة تعليق');
         }
 
-        // Anonymous comments always need approval
+        // Check auto-approval setting for anonymous comments
+        // Falls back to general comment approval setting if not set
+        $autoApproveAnonymous = SiteSetting::get('auto_approve_anonymous_comments', 
+            SiteSetting::get('auto_approve_comments', false)
+        );
+        
+        $status = $autoApproveAnonymous ? 'approved' : 'pending';
+
         $comment = Comment::createAnonymous([
             'post_id' => $post->id,
             'content' => $validated['content'],
             'anonymous_name' => $validated['anonymous_name'],
+            'status' => $status,
         ]);
 
-        return back()->with('success', 'تم إرسال تعليقك للمراجعة وسيظهر بعد الموافقة عليه.');
+        $message = $autoApproveAnonymous ? 
+            'تم إضافة تعليقك بنجاح!' : 
+            'تم إرسال تعليقك للمراجعة وسيظهر بعد الموافقة عليه.';
+
+        return back()->with('success', $message);
     }
 
     /**

@@ -78,6 +78,60 @@ class PostController extends Controller
             ])->withInput();
         }
 
+        // Check for rate limiting and duplicate posts
+        if (Auth::check()) {
+            $userId = Auth::id();
+            
+            // Rate limiting: max 1 post per minute
+            $recentPost = Post::where('user_id', $userId)
+                ->where('created_at', '>=', now()->subMinute())
+                ->exists();
+            
+            if ($recentPost) {
+                return back()->withErrors([
+                    'content' => 'يجب الانتظار دقيقة واحدة بين كل منشور والآخر.'
+                ])->withInput();
+            }
+            
+            // Check for exact duplicate content in last 24 hours
+            $recentDuplicate = Post::where('user_id', $userId)
+                ->where('content', $validated['content'])
+                ->where('created_at', '>=', now()->subHours(24))
+                ->exists();
+            
+            if ($recentDuplicate) {
+                return back()->withErrors([
+                    'content' => 'لقد قمت بنشر نفس هذا المحتوى مؤخراً. لا يمكن تكرار نفس المنشور.'
+                ])->withInput();
+            }
+        } else {
+            $ip = $request->ip();
+            
+            // Rate limiting for anonymous posts: max 1 post per 2 minutes
+            $recentPostByIP = Post::whereNull('user_id')
+                ->where('created_at', '>=', now()->subMinutes(2))
+                // Note: You might want to add ip_address field to posts table for better tracking
+                ->exists();
+                
+            if ($recentPostByIP) {
+                return back()->withErrors([
+                    'content' => 'يجب الانتظار دقيقتين بين كل منشور والآخر للمستخدمين المجهولين.'
+                ])->withInput();
+            }
+            
+            // Check for exact duplicate content
+            $recentDuplicateByIP = Post::where('content', $validated['content'])
+                ->whereNull('user_id') // Anonymous posts
+                ->where('created_at', '>=', now()->subHours(24))
+                ->exists();
+            
+            if ($recentDuplicateByIP) {
+                return back()->withErrors([
+                    'content' => 'تم نشر نفس هذا المحتوى مؤخراً. لا يمكن تكرار نفس المنشور.'
+                ])->withInput();
+            }
+        }
+
         // Handle image upload
         $imagePath = null;
         if ($request->hasFile('image')) {

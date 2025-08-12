@@ -138,6 +138,9 @@ class Comment extends Model
      */
     public static function createAnonymous(array $data): static
     {
+        // Allow status to be specified, default to pending
+        $status = $data['status'] ?? 'pending';
+        
         return static::create([
             'post_id' => $data['post_id'],
             'parent_id' => $data['parent_id'] ?? null,
@@ -145,7 +148,7 @@ class Comment extends Model
             'anonymous_name' => $data['anonymous_name'] ?? 'مجهول',
             'is_anonymous' => true,
             'is_active' => true,
-            'status' => 'pending', // Need approval for anonymous comments
+            'status' => $status,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'likes_count' => 0,

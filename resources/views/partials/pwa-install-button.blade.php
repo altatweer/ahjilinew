@@ -683,7 +683,7 @@
             
             // إذا كان iOS وفي متصفح عادي
             if (isIOS) {
-                // إظهار تعليمات iOS
+                // إظهار تعليمات iOS (الآن يظهر عند النقر فقط)
                 if (typeof showiOSInstallModal === 'function') {
                     showiOSInstallModal();
                 } else {
