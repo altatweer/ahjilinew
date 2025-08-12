@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار PWA - احجيلي</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#5C7D99">
+    
+    <style>
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            text-align: center;
+            opacity: 0.8;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .test-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status.pass {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status.fail {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .status.pending {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .button {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .results {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .score {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .test-item {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🧪 اختبار PWA</h1>
+        <p class="subtitle">فحص شامل لميزات Progressive Web App</p>
+        
+        <!-- اختبار البيئة -->
+        <div class="test-section">
+            <h2 class="test-title">🌐 بيئة التشغيل</h2>
+            <div class="test-item">
+                <span>HTTPS مفعل</span>
+                <span class="status" id="https-status">جاري الفحص...</span>
+            </div>
+            <div class="test-item">
+                <span>Service Worker مدعوم</span>
+                <span class="status" id="sw-support">جاري الفحص...</span>
+            </div>
+            <div class="test-item">
+                <span>Web App Manifest موجود</span>
+                <span class="status" id="manifest-status">جاري الفحص...</span>
+            </div>
+        </div>
+        
+        <!-- اختبار Service Worker -->
+        <div class="test-section">
+            <h2 class="test-title">⚙️ Service Worker</h2>
+            <div class="test-item">
+                <span>Service Worker مسجل</span>
+                <span class="status" id="sw-registered">جاري الفحص...</span>
+            </div>
+            <div class="test-item">
+                <span>Service Worker نشط</span>
+                <span class="status" id="sw-active">جاري الفحص...</span>
+            </div>
+            <div class="test-item">
+                <span>Cache API يعمل</span>
+                <span class="status" id="cache-status">جاري الفحص...</span>
+            </div>
+        </div>
+        
+        <!-- اختبار التثبيت -->
+        <div class="test-section">
+            <h2 class="test-title">📱 إمكانية التثبيت</h2>
+            <div class="test-item">
+                <span>قابل للتثبيت</span>
+                <span class="status" id="installable-status">جاري الفحص...</span>
+            </div>
+            <div class="test-item">
+                <span>أيقونات متاحة</span>
+                <span class="status" id="icons-status">جاري الفحص...</span>
+            </div>
+            <div class="test-item">
+                <span>Standalone Display</span>
+                <span class="status" id="standalone-status">جاري الفحص...</span>
+            </div>
+        </div>
+        
+        <!-- اختبار الميزات -->
+        <div class="test-section">
+            <h2 class="test-title">🔔 ميزات PWA</h2>
+            <div class="test-item">
+                <span>Push Notifications مدعوم</span>
+                <span class="status" id="push-status">جاري الفحص...</span>
+            </div>
+            <div class="test-item">
+                <span>Background Sync مدعوم</span>
+                <span class="status" id="sync-status">جاري الفحص...</span>
+            </div>
+            <div class="test-item">
+                <span>Offline Mode يعمل</span>
+                <span class="status" id="offline-status">جاري الفحص...</span>
+            </div>
+        </div>
+        
+        <!-- أزرار الاختبار -->
+        <div class="test-section">
+            <h2 class="test-title">🎮 اختبارات تفاعلية</h2>
+            <div style="text-align: center;">
+                <button class="button" onclick="testOffline()">📡 اختبار Offline</button>
+                <button class="button" onclick="testInstall()">📱 اختبار التثبيت</button>
+                <button class="button" onclick="testCache()">💾 اختبار Cache</button>
+                <button class="button" onclick="runAllTests()">🔄 إعادة الاختبار</button>
+            </div>
+        </div>
+        
+        <!-- النتائج -->
+        <div class="results">
+            <div class="score" id="pwa-score">0/12</div>
+            <p id="pwa-verdict">جاري الفحص...</p>
+            
+            <a href="/" class="button">🏠 العودة للصفحة الرئيسية</a>
+            <a href="/offline.html" class="button">📡 اختبار Offline</a>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let totalTests = 12;
+        
+        // تشغيل الاختبارات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(runAllTests, 500);
+        });
+        
+        // تشغيل جميع الاختبارات
+        async function runAllTests() {
+            score = 0;
+            
+            // إعادة تعيين الحالات
+            document.querySelectorAll('.status').forEach(status => {
+                status.textContent = 'جاري الفحص...';
+                status.className = 'status pending';
+            });
+            
+            // اختبار البيئة
+            testHTTPS();
+            testServiceWorkerSupport();
+            await testManifest();
+            
+            // اختبار Service Worker
+            await testServiceWorkerRegistration();
+            await testServiceWorkerActive();
+            await testCacheAPI();
+            
+            // اختبار التثبيت
+            await testInstallability();
+            await testIcons();
+            testStandaloneDisplay();
+            
+            // اختبار الميزات
+            testPushNotifications();
+            testBackgroundSync();
+            await testOfflineCapability();
+            
+            // تحديث النتيجة
+            updateScore();
+        }
+        
+        // اختبار HTTPS
+        function testHTTPS() {
+            const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
+            updateStatus('https-status', isHTTPS, 'مفعل', 'غير مفعل');
+        }
+        
+        // اختبار دعم Service Worker
+        function testServiceWorkerSupport() {
+            const supported = 'serviceWorker' in navigator;
+            updateStatus('sw-support', supported, 'مدعوم', 'غير مدعوم');
+        }
+        
+        // اختبار Manifest
+        async function testManifest() {
+            try {
+                const response = await fetch('/manifest.json');
+                const manifest = await response.json();
+                const hasRequired = manifest.name && manifest.start_url && manifest.display;
+                updateStatus('manifest-status', hasRequired, 'موجود وصحيح', 'مفقود أو خاطئ');
+            } catch (error) {
+                updateStatus('manifest-status', false, 'موجود', 'مفقود');
+            }
+        }
+        
+        // اختبار تسجيل Service Worker
+        async function testServiceWorkerRegistration() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    updateStatus('sw-registered', !!registration, 'مسجل', 'غير مسجل');
+                } catch (error) {
+                    updateStatus('sw-registered', false, 'مسجل', 'فشل التسجيل');
+                }
+            } else {
+                updateStatus('sw-registered', false, 'مسجل', 'غير مدعوم');
+            }
+        }
+        
+        // اختبار Service Worker النشط
+        async function testServiceWorkerActive() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    const active = registration && registration.active;
+                    updateStatus('sw-active', !!active, 'نشط', 'غير نشط');
+                } catch (error) {
+                    updateStatus('sw-active', false, 'نشط', 'خطأ');
+                }
+            } else {
+                updateStatus('sw-active', false, 'نشط', 'غير مدعوم');
+            }
+        }
+        
+        // اختبار Cache API
+        async function testCacheAPI() {
+            try {
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    updateStatus('cache-status', cacheNames.length > 0, 'يعمل', 'لا يعمل');
+                } else {
+                    updateStatus('cache-status', false, 'يعمل', 'غير مدعوم');
+                }
+            } catch (error) {
+                updateStatus('cache-status', false, 'يعمل', 'خطأ');
+            }
+        }
+        
+        // اختبار إمكانية التثبيت
+        async function testInstallability() {
+            // فحص معايير PWA الأساسية
+            const hasManifest = await testManifestExists();
+            const hasServiceWorker = 'serviceWorker' in navigator;
+            const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
+            
+            const installable = hasManifest && hasServiceWorker && isHTTPS;
+            updateStatus('installable-status', installable, 'قابل للتثبيت', 'غير قابل');
+        }
+        
+        // اختبار وجود الأيقونات
+        async function testIcons() {
+            try {
+                const response = await fetch('/manifest.json');
+                const manifest = await response.json();
+                const hasIcons = manifest.icons && manifest.icons.length > 0;
+                updateStatus('icons-status', hasIcons, 'متاحة', 'مفقودة');
+            } catch (error) {
+                updateStatus('icons-status', false, 'متاحة', 'خطأ');
+            }
+        }
+        
+        // اختبار Standalone Display
+        function testStandaloneDisplay() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                                window.navigator.standalone;
+            updateStatus('standalone-status', isStandalone, 'مفعل', 'غير مفعل');
+        }
+        
+        // اختبار Push Notifications
+        function testPushNotifications() {
+            const supported = 'Notification' in window && 'PushManager' in window;
+            updateStatus('push-status', supported, 'مدعوم', 'غير مدعوم');
+        }
+        
+        // اختبار Background Sync
+        function testBackgroundSync() {
+            const supported = 'serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype;
+            updateStatus('sync-status', supported, 'مدعوم', 'غير مدعوم');
+        }
+        
+        // اختبار Offline
+        async function testOfflineCapability() {
+            try {
+                const response = await fetch('/offline.html', { cache: 'no-cache' });
+                updateStatus('offline-status', response.ok, 'يعمل', 'لا يعمل');
+            } catch (error) {
+                updateStatus('offline-status', false, 'يعمل', 'خطأ');
+            }
+        }
+        
+        // وظائف مساعدة
+        async function testManifestExists() {
+            try {
+                const response = await fetch('/manifest.json');
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+        
+        function updateStatus(elementId, passed, passText, failText) {
+            const element = document.getElementById(elementId);
+            if (passed) {
+                element.textContent = '✅ ' + passText;
+                element.className = 'status pass';
+                score++;
+            } else {
+                element.textContent = '❌ ' + failText;
+                element.className = 'status fail';
+            }
+        }
+        
+        function updateScore() {
+            const scoreElement = document.getElementById('pwa-score');
+            const verdictElement = document.getElementById('pwa-verdict');
+            
+            scoreElement.textContent = `${score}/${totalTests}`;
+            
+            let verdict = '';
+            let percentage = Math.round((score / totalTests) * 100);
+            
+            if (percentage >= 90) {
+                verdict = '🏆 ممتاز! PWA جاهز للإنتاج';
+                scoreElement.style.color = '#28a745';
+            } else if (percentage >= 70) {
+                verdict = '👍 جيد! بعض التحسينات مطلوبة';
+                scoreElement.style.color = '#28a745';
+            } else if (percentage >= 50) {
+                verdict = '⚠️ متوسط! يحتاج تحسينات';
+                scoreElement.style.color = '#ffc107';
+            } else {
+                verdict = '❌ ضعيف! يحتاج عمل كثير';
+                scoreElement.style.color = '#dc3545';
+            }
+            
+            verdictElement.textContent = `${verdict} (${percentage}%)`;
+        }
+        
+        // اختبارات تفاعلية
+        function testOffline() {
+            alert('🔄 جاري الانتقال لصفحة اختبار Offline...');
+            window.location.href = '/offline.html';
+        }
+        
+        function testInstall() {
+            if ('serviceWorker' in navigator) {
+                alert('✅ PWA جاهز للتثبيت! ابحث عن زر "ثبت التطبيق" في المتصفح أو في الصفحة الرئيسية.');
+            } else {
+                alert('❌ المتصفح لا يدعم PWA');
+            }
+        }
+        
+        async function testCache() {
+            try {
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    alert(`📦 Cache فعال!\nعدد الكاشات: ${cacheNames.length}\nالأسماء: ${cacheNames.join(', ')}`);
+                } else {
+                    alert('❌ Cache API غير مدعوم');
+                }
+            } catch (error) {
+                alert('❌ خطأ في فحص Cache: ' + error.message);
+            }
+        }
+        
+        console.log('🧪 صفحة اختبار PWA جاهزة!');
+    </script>
+</body>
+</html>

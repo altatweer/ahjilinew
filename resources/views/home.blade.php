@@ -5,6 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>احجيلي - حلول وتحذيرات للمجتمع العراقي</title>
     
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="منصة اجتماعية عراقية لحل المشاكل والمساعدة المجتمعية. تواصل، شارك، احصل على المساعدة من مجتمعك">
+    <meta name="keywords" content="احجيلي، العراق، مجتمع، مساعدة، حلول، تواصل اجتماعي">
+    <meta name="author" content="احجيلي">
+    <meta name="robots" content="index, follow">
+    
+    <!-- PWA Theme -->
+    <meta name="theme-color" content="#5C7D99">
+    <meta name="msapplication-navbutton-color" content="#5C7D99">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="احجيلي">
+    <meta name="application-name" content="احجيلي">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/pwa/icon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/pwa/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/pwa/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/images/pwa/icon-512x512.png">
+    <link rel="apple-touch-icon" href="/images/pwa/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/pwa/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/pwa/icon-180x180.png">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="احجيلي - منصة التواصل العراقية">
+    <meta property="og:description" content="منصة اجتماعية عراقية لحل المشاكل والمساعدة المجتمعية">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
+    <meta property="og:image" content="{{ url('/images/pwa/icon-512x512.png') }}">
+    <meta property="og:locale" content="ar_IQ">
+    <meta property="og:site_name" content="احجيلي">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="احجيلي - منصة التواصل العراقية">
+    <meta name="twitter:description" content="منصة اجتماعية عراقية لحل المشاكل والمساعدة المجتمعية">
+    <meta name="twitter:image" content="{{ url('/images/pwa/icon-512x512.png') }}">
+    
     <!-- Bootstrap CSS RTL -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -658,6 +700,293 @@
                 this.remove();
             });
         }
+    </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        // تسجيل Service Worker للPWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    console.log('🔧 بدء تسجيل Service Worker...');
+                    
+                    const registration = await navigator.serviceWorker.register('/sw.js', {
+                        scope: '/'
+                    });
+                    
+                    console.log('✅ تم تسجيل Service Worker بنجاح:', registration.scope);
+                    
+                    // التحقق من التحديثات
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        console.log('🔄 Service Worker جديد متاح');
+                        
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('📱 تحديث PWA متاح');
+                                showPWAUpdate(registration);
+                            }
+                        });
+                    });
+                    
+                    // إظهار إشعار التثبيت
+                    showInstallPromotion();
+                    
+                } catch (error) {
+                    console.error('❌ فشل تسجيل Service Worker:', error);
+                }
+            });
+        } else {
+            console.warn('⚠️ Service Worker غير مدعوم في هذا المتصفح');
+        }
+        
+        // متغيرات PWA
+        let deferredPrompt;
+        let pwaInstalled = localStorage.getItem('pwa-installed') === 'true';
+        
+        // التعامل مع حدث التثبيت
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('📱 PWA قابل للتثبيت');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            if (!pwaInstalled) {
+                showInstallButton();
+            }
+        });
+        
+        // عند اكتمال التثبيت
+        window.addEventListener('appinstalled', () => {
+            console.log('🎉 تم تثبيت PWA بنجاح!');
+            localStorage.setItem('pwa-installed', 'true');
+            pwaInstalled = true;
+            hideInstallButton();
+            showToast('🎉 تم تثبيت احجيلي على جهازك بنجاح!', 'success');
+        });
+        
+        // إظهار زر التثبيت
+        function showInstallButton() {
+            // التحقق من وجود زر التثبيت
+            let installBtn = document.getElementById('pwa-install-btn');
+            
+            if (!installBtn) {
+                // إنشاء زر التثبيت
+                installBtn = document.createElement('button');
+                installBtn.id = 'pwa-install-btn';
+                installBtn.innerHTML = '📱 ثبت التطبيق';
+                installBtn.className = 'btn btn-success position-fixed';
+                installBtn.style.cssText = `
+                    bottom: 20px;
+                    left: 20px;
+                    z-index: 1050;
+                    border-radius: 25px;
+                    padding: 10px 20px;
+                    font-weight: 600;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    animation: pulse 2s infinite;
+                `;
+                
+                // إضافة CSS للتحريك
+                if (!document.getElementById('pwa-install-css')) {
+                    const style = document.createElement('style');
+                    style.id = 'pwa-install-css';
+                    style.textContent = `
+                        @keyframes pulse {
+                            0% { transform: scale(1); }
+                            50% { transform: scale(1.05); }
+                            100% { transform: scale(1); }
+                        }
+                        #pwa-install-btn:hover {
+                            transform: scale(1.1) !important;
+                            transition: transform 0.2s ease;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                
+                // حدث النقر
+                installBtn.addEventListener('click', installPWA);
+                
+                document.body.appendChild(installBtn);
+                
+                console.log('📱 تم إظهار زر تثبيت PWA');
+            }
+        }
+        
+        // إخفاء زر التثبيت
+        function hideInstallButton() {
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) {
+                installBtn.remove();
+            }
+        }
+        
+        // تثبيت PWA
+        async function installPWA() {
+            if (!deferredPrompt) {
+                showToast('التثبيت غير متاح حالياً', 'warning');
+                return;
+            }
+            
+            try {
+                // إظهار مربع حوار التثبيت
+                deferredPrompt.prompt();
+                
+                // انتظار رد المستخدم
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    console.log('👍 المستخدم وافق على التثبيت');
+                    showToast('🔄 جاري تثبيت التطبيق...', 'info');
+                } else {
+                    console.log('👎 المستخدم رفض التثبيت');
+                    showToast('تم إلغاء التثبيت', 'warning');
+                }
+                
+                deferredPrompt = null;
+                hideInstallButton();
+                
+            } catch (error) {
+                console.error('❌ خطأ في التثبيت:', error);
+                showToast('حدث خطأ أثناء التثبيت', 'error');
+            }
+        }
+        
+        // إظهار ترويج التثبيت
+        function showInstallPromotion() {
+            // عدم إظهار الترويج إذا كان مثبت أو تم رفضه مؤخراً
+            const lastPromotion = localStorage.getItem('pwa-promotion-dismissed');
+            const now = new Date().getTime();
+            
+            if (pwaInstalled || (lastPromotion && now - parseInt(lastPromotion) < 7 * 24 * 60 * 60 * 1000)) {
+                return;
+            }
+            
+            // إظهار رسالة ترويجية بعد 10 ثواني
+            setTimeout(() => {
+                if (!pwaInstalled && !document.getElementById('pwa-install-btn')) {
+                    showInstallPromotionModal();
+                }
+            }, 10000);
+        }
+        
+        // إظهار مودال الترويج
+        function showInstallPromotionModal() {
+            const modalHtml = `
+                <div class="modal fade" id="pwaPromotionModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="border-radius: 15px;">
+                            <div class="modal-body text-center p-4">
+                                <div style="font-size: 4rem; margin-bottom: 1rem;">📱</div>
+                                <h5 class="modal-title mb-3">ثبت تطبيق احجيلي</h5>
+                                <p class="text-muted mb-4">
+                                    احصل على تجربة أفضل وأسرع!<br>
+                                    • يعمل بدون إنترنت<br>
+                                    • إشعارات فورية<br>
+                                    • سرعة أعلى
+                                </p>
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-primary" onclick="installFromModal()">
+                                        📱 ثبت الآن
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="dismissPromotion()">
+                                        ربما لاحقاً
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = new bootstrap.Modal(document.getElementById('pwaPromotionModal'));
+            modal.show();
+            
+            // إزالة المودال بعد الإغلاق
+            document.getElementById('pwaPromotionModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+            });
+        }
+        
+        // تثبيت من المودال
+        function installFromModal() {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('pwaPromotionModal'));
+            modal.hide();
+            
+            if (deferredPrompt) {
+                installPWA();
+            } else {
+                showInstallButton();
+                showToast('ابحث عن زر التثبيت أسفل الشاشة', 'info');
+            }
+        }
+        
+        // رفض الترويج
+        function dismissPromotion() {
+            localStorage.setItem('pwa-promotion-dismissed', new Date().getTime().toString());
+        }
+        
+        // إظهار تحديث PWA
+        function showPWAUpdate(registration) {
+            const updateHtml = `
+                <div class="toast align-items-center text-white bg-info border-0" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="bi bi-arrow-clockwise me-2"></i>
+                            تحديث جديد متاح للتطبيق
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-light me-2" onclick="updatePWA()">
+                            تحديث
+                        </button>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            
+            // إظهار toast التحديث
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = '1055';
+                document.body.appendChild(toastContainer);
+            }
+            
+            const toastElement = document.createElement('div');
+            toastElement.innerHTML = updateHtml;
+            toastContainer.appendChild(toastElement.firstElementChild);
+            
+            const toast = new bootstrap.Toast(toastContainer.lastElementChild, {
+                autohide: false // لا يختفي تلقائياً
+            });
+            toast.show();
+            
+            // حفظ registration للتحديث
+            window.pwaUpdateRegistration = registration;
+        }
+        
+        // تحديث PWA
+        function updatePWA() {
+            if (window.pwaUpdateRegistration && window.pwaUpdateRegistration.waiting) {
+                window.pwaUpdateRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                window.location.reload();
+            }
+        }
+        
+        // مراقبة حالة الاتصال
+        window.addEventListener('online', () => {
+            console.log('🌐 تم استعادة الاتصال');
+            showToast('تم استعادة الاتصال بالإنترنت', 'success');
+        });
+        
+        window.addEventListener('offline', () => {
+            console.log('📡 فقدان الاتصال - تفعيل الوضع Offline');
+            showToast('لا يوجد اتصال - التطبيق يعمل بوضع عدم الاتصال', 'warning');
+        });
+        
+        console.log('🎉 احجيلي PWA جاهز للعمل!');
     </script>
 </body>
 </html>

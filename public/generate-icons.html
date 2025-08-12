@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مولد أيقونات PWA - احجيلي</title>
+    <style>
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .icon-preview {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        
+        .icon-size {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        button {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px;
+        }
+        
+        button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .progress {
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 مولد أيقونات PWA</h1>
+        <p>إنشاء أيقونات مؤقتة لـ احجيلي PWA</p>
+        
+        <div id="preview">
+            <!-- سيتم إنشاء معاينة الأيقونات هنا -->
+        </div>
+        
+        <button onclick="generateIcons()">🚀 إنشاء جميع الأيقونات</button>
+        <button onclick="downloadAll()">📦 تحميل جميع الأيقونات</button>
+        
+        <div class="progress" id="progress">
+            انقر "إنشاء جميع الأيقونات" للبدء
+        </div>
+        
+        <p style="font-size: 14px; opacity: 0.8;">
+            💡 ملاحظة: هذه أيقونات مؤقتة بسيطة. يمكنك استبدالها بتصميم أفضل لاحقاً
+        </p>
+    </div>
+
+    <script>
+        const iconSizes = [
+            { size: 16, name: 'icon-16x16.png' },
+            { size: 32, name: 'icon-32x32.png' },
+            { size: 72, name: 'icon-72x72.png' },
+            { size: 96, name: 'icon-96x96.png' },
+            { size: 128, name: 'icon-128x128.png' },
+            { size: 144, name: 'icon-144x144.png' },
+            { size: 152, name: 'icon-152x152.png' },
+            { size: 180, name: 'icon-180x180.png' },
+            { size: 192, name: 'icon-192x192.png' },
+            { size: 384, name: 'icon-384x384.png' },
+            { size: 512, name: 'icon-512x512.png' }
+        ];
+        
+        const specialIcons = [
+            { size: 72, name: 'badge-72x72.png' },
+            { size: 192, name: 'shortcut-new-post.png' },
+            { size: 192, name: 'shortcut-notifications.png' },
+            { size: 192, name: 'shortcut-search.png' }
+        ];
+        
+        let generatedIcons = [];
+        
+        // إنشاء معاينة الأيقونات
+        function createPreview() {
+            const preview = document.getElementById('preview');
+            
+            iconSizes.forEach(icon => {
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'icon-preview';
+                iconDiv.innerHTML = `
+                    <canvas width="${icon.size}" height="${icon.size}" 
+                            style="width: ${Math.min(icon.size, 64)}px; height: ${Math.min(icon.size, 64)}px;">
+                    </canvas>
+                    <div class="icon-size">${icon.size}x${icon.size}</div>
+                `;
+                preview.appendChild(iconDiv);
+            });
+        }
+        
+        // إنشاء أيقونة واحدة
+        function createIcon(size, text = 'احجيلي', specialIcon = false) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // خلفية متدرجة
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#5C7D99');
+            gradient.addColorStop(1, '#4A6A85');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // حدود مستديرة (تقريبي)
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            const radius = size * 0.15;
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // النص
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // حساب حجم الخط
+            let fontSize = size * 0.15;
+            if (specialIcon) {
+                // للأيقونات الخاصة، أضف رمز
+                ctx.font = `bold ${fontSize * 1.5}px Arial`;
+                ctx.fillText(getSpecialIcon(text), size / 2, size / 2 - fontSize);
+                
+                ctx.font = `bold ${fontSize * 0.8}px Arial`;
+                ctx.fillText('احجيلي', size / 2, size / 2 + fontSize);
+            } else {
+                // للأيقونات العادية
+                if (size < 72) {
+                    ctx.font = `bold ${fontSize * 1.5}px Arial`;
+                    ctx.fillText('ح', size / 2, size / 2);
+                } else {
+                    ctx.font = `bold ${fontSize}px Arial`;
+                    ctx.fillText(text, size / 2, size / 2);
+                }
+            }
+            
+            // ظل للنص
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 2;
+            ctx.shadowOffsetX = 1;
+            ctx.shadowOffsetY = 1;
+            
+            return canvas.toDataURL('image/png');
+        }
+        
+        // رموز خاصة للأيقونات
+        function getSpecialIcon(type) {
+            switch(type) {
+                case 'shortcut-new-post.png': return '✏️';
+                case 'shortcut-notifications.png': return '🔔';
+                case 'shortcut-search.png': return '🔍';
+                case 'badge-72x72.png': return '📱';
+                default: return '🏠';
+            }
+        }
+        
+        // إنشاء جميع الأيقونات
+        async function generateIcons() {
+            const progress = document.getElementById('progress');
+            generatedIcons = [];
+            
+            // إنشاء الأيقونات العادية
+            for (let i = 0; i < iconSizes.length; i++) {
+                const icon = iconSizes[i];
+                progress.textContent = `إنشاء ${icon.name}... (${i + 1}/${iconSizes.length + specialIcons.length})`;
+                
+                const dataUrl = createIcon(icon.size);
+                generatedIcons.push({
+                    name: icon.name,
+                    dataUrl: dataUrl,
+                    size: icon.size
+                });
+                
+                // تحديث المعاينة
+                updatePreview(i, dataUrl, icon.size);
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            // إنشاء الأيقونات الخاصة
+            for (let i = 0; i < specialIcons.length; i++) {
+                const icon = specialIcons[i];
+                progress.textContent = `إنشاء ${icon.name}... (${iconSizes.length + i + 1}/${iconSizes.length + specialIcons.length})`;
+                
+                const dataUrl = createIcon(icon.size, icon.name, true);
+                generatedIcons.push({
+                    name: icon.name,
+                    dataUrl: dataUrl,
+                    size: icon.size
+                });
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            progress.innerHTML = `
+                ✅ تم إنشاء ${generatedIcons.length} أيقونة بنجاح!<br>
+                <small>يمكنك الآن تحميلها أو نسخها يدوياً</small>
+            `;
+        }
+        
+        // تحديث المعاينة
+        function updatePreview(index, dataUrl, size) {
+            const previews = document.querySelectorAll('.icon-preview canvas');
+            if (previews[index]) {
+                const img = new Image();
+                img.onload = function() {
+                    const ctx = previews[index].getContext('2d');
+                    ctx.clearRect(0, 0, previews[index].width, previews[index].height);
+                    ctx.drawImage(img, 0, 0, previews[index].width, previews[index].height);
+                };
+                img.src = dataUrl;
+            }
+        }
+        
+        // تحميل جميع الأيقونات
+        function downloadAll() {
+            if (generatedIcons.length === 0) {
+                alert('يجب إنشاء الأيقونات أولاً!');
+                return;
+            }
+            
+            generatedIcons.forEach(icon => {
+                downloadIcon(icon.name, icon.dataUrl);
+            });
+            
+            alert(`تم تحميل ${generatedIcons.length} أيقونة!\nضعها في مجلد: public/images/pwa/`);
+        }
+        
+        // تحميل أيقونة واحدة
+        function downloadIcon(filename, dataUrl) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // إنشاء معاينة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', createPreview);
+        
+        console.log('🎨 مولد أيقونات PWA جاهز!');
+    </script>
+</body>
+</html>

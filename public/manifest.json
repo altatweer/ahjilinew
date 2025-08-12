@@ -1,0 +1,45 @@
+{
+  "name": "احجيلي - منصة التواصل العراقية",
+  "short_name": "احجيلي",
+  "description": "منصة اجتماعية عراقية لحل المشاكل والمساعدة المجتمعية",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["social", "community", "lifestyle"],
+
+  "icons": [
+    {
+      "src": "/images/pwa/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/pwa/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "إضافة منشور جديد",
+      "short_name": "منشور جديد",
+      "description": "أضف منشور جديد بسرعة",
+      "url": "/posts/create"
+    },
+    {
+      "name": "البحث",
+      "short_name": "البحث",
+      "description": "البحث في المنشورات والمستخدمين", 
+      "url": "/?search=1"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
