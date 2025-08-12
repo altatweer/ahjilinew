@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مولد أيقونات PNG - احجيلي</title>
+    <style>
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .progress {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .icon-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .icon-preview {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .download-all {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 مولد أيقونات PNG لاحجيلي PWA</h1>
+        <p>إنشاء أيقونات PNG عالية الجودة للتثبيت</p>
+        
+        <div class="instructions">
+            <h3>📋 التعليمات:</h3>
+            <ol>
+                <li>اضغط "إنشاء جميع الأيقونات PNG"</li>
+                <li>انتظر حتى انتهاء الإنشاء</li>
+                <li>اضغط "تحميل الكل" لحفظ الأيقونات</li>
+                <li>ارفع الملفات لمجلد public/images/pwa/</li>
+                <li>حدث manifest.json ليستخدم PNG</li>
+            </ol>
+        </div>
+        
+        <button onclick="generateAllIcons()" id="generateBtn">
+            🚀 إنشاء جميع الأيقونات PNG
+        </button>
+        
+        <div class="progress" id="progress">
+            انقر الزر أعلاه لبدء الإنشاء
+        </div>
+        
+        <div class="icon-grid" id="iconGrid">
+            <!-- سيتم ملؤها بالأيقونات -->
+        </div>
+        
+        <button onclick="downloadAll()" id="downloadBtn" class="download-all" style="display: none;">
+            📦 تحميل جميع الأيقونات
+        </button>
+        
+        <button onclick="updateManifest()" id="manifestBtn" style="display: none;">
+            📝 إنشاء manifest.json محدث
+        </button>
+    </div>
+
+    <script>
+        const iconSizes = [
+            { size: 16, name: 'icon-16x16.png' },
+            { size: 32, name: 'icon-32x32.png' },
+            { size: 72, name: 'icon-72x72.png' },
+            { size: 96, name: 'icon-96x96.png' },
+            { size: 128, name: 'icon-128x128.png' },
+            { size: 144, name: 'icon-144x144.png' },
+            { size: 152, name: 'icon-152x152.png' },
+            { size: 180, name: 'icon-180x180.png' },
+            { size: 192, name: 'icon-192x192.png' },
+            { size: 384, name: 'icon-384x384.png' },
+            { size: 512, name: 'icon-512x512.png' }
+        ];
+        
+        let generatedIcons = [];
+        
+        // إنشاء أيقونة واحدة بالCanvas
+        function createIcon(size, text = 'احجيلي') {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // خلفية متدرجة
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#5C7D99');
+            gradient.addColorStop(1, '#4A6A85');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // حدود مستديرة
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            const radius = size * 0.15;
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // ظل للخلفية
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = size * 0.02;
+            ctx.shadowOffsetX = size * 0.01;
+            ctx.shadowOffsetY = size * 0.01;
+            
+            // دائرة للرمز
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.beginPath();
+            ctx.arc(size / 2, size * 0.35, size * 0.13, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // إعادة تعيين الظل
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            
+            // النص الرئيسي
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // حساب حجم الخط
+            let fontSize = size * 0.15;
+            
+            if (size < 72) {
+                // للأيقونات الصغيرة - رمز فقط
+                ctx.font = `bold ${fontSize * 1.5}px Arial, sans-serif`;
+                ctx.fillText('ح', size / 2, size / 2);
+            } else {
+                // للأيقونات الكبيرة - رمز ونص
+                // الرمز
+                ctx.font = `bold ${fontSize * 0.9}px Arial, sans-serif`;
+                ctx.fillText('ح', size / 2, size * 0.35);
+                
+                // النص
+                ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+                ctx.fillText(text, size / 2, size * 0.65);
+            }
+            
+            // ظل للنص
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 2;
+            ctx.shadowOffsetX = 1;
+            ctx.shadowOffsetY = 1;
+            
+            return canvas.toDataURL('image/png');
+        }
+        
+        // إنشاء جميع الأيقونات
+        async function generateAllIcons() {
+            const generateBtn = document.getElementById('generateBtn');
+            const progress = document.getElementById('progress');
+            const iconGrid = document.getElementById('iconGrid');
+            
+            generateBtn.disabled = true;
+            generateBtn.textContent = '🔄 جاري الإنشاء...';
+            generatedIcons = [];
+            iconGrid.innerHTML = '';
+            
+            for (let i = 0; i < iconSizes.length; i++) {
+                const icon = iconSizes[i];
+                progress.textContent = `🎨 إنشاء ${icon.name}... (${i + 1}/${iconSizes.length})`;
+                
+                // إنشاء الأيقونة
+                const dataUrl = createIcon(icon.size);
+                generatedIcons.push({
+                    name: icon.name,
+                    dataUrl: dataUrl,
+                    size: icon.size
+                });
+                
+                // إضافة للعرض
+                const iconItem = document.createElement('div');
+                iconItem.className = 'icon-item';
+                iconItem.innerHTML = `
+                    <div class="icon-preview">
+                        <img src="${dataUrl}" style="width: 48px; height: 48px; border-radius: 8px;">
+                    </div>
+                    <div style="font-size: 12px;">${icon.size}x${icon.size}</div>
+                    <div style="font-size: 10px; opacity: 0.8;">${icon.name}</div>
+                `;
+                iconGrid.appendChild(iconItem);
+                
+                // وقفة صغيرة للسماح بتحديث الواجهة
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            progress.innerHTML = `
+                <span class="success">✅ تم إنشاء ${generatedIcons.length} أيقونة بنجاح!</span><br>
+                <small>جودة عالية • PNG • جاهزة للتثبيت</small>
+            `;
+            
+            document.getElementById('downloadBtn').style.display = 'inline-block';
+            document.getElementById('manifestBtn').style.display = 'inline-block';
+            generateBtn.textContent = '🔄 إعادة الإنشاء';
+            generateBtn.disabled = false;
+        }
+        
+        // تحميل أيقونة واحدة
+        function downloadIcon(name, dataUrl) {
+            const link = document.createElement('a');
+            link.download = name;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // تحميل جميع الأيقونات
+        function downloadAll() {
+            if (generatedIcons.length === 0) {
+                alert('يجب إنشاء الأيقونات أولاً!');
+                return;
+            }
+            
+            const progress = document.getElementById('progress');
+            progress.textContent = '📦 جاري تحميل الأيقونات...';
+            
+            let downloaded = 0;
+            generatedIcons.forEach((icon, index) => {
+                setTimeout(() => {
+                    downloadIcon(icon.name, icon.dataUrl);
+                    downloaded++;
+                    
+                    if (downloaded === generatedIcons.length) {
+                        progress.innerHTML = `
+                            <span class="success">✅ تم تحميل ${downloaded} أيقونة!</span><br>
+                            <small>ضعها في مجلد: public/images/pwa/</small>
+                        `;
+                    }
+                }, index * 200); // تأخير 200ms بين كل تحميل
+            });
+        }
+        
+        // إنشاء manifest.json محدث
+        function updateManifest() {
+            const manifestContent = {
+                "name": "احجيلي - منصة التواصل العراقية",
+                "short_name": "احجيلي",
+                "description": "منصة اجتماعية عراقية لحل المشاكل والمساعدة المجتمعية",
+                "start_url": "/",
+                "display": "standalone",
+                "background_color": "#ffffff",
+                "theme_color": "#5C7D99",
+                "orientation": "portrait-primary",
+                "scope": "/",
+                "lang": "ar",
+                "dir": "rtl",
+                "categories": ["social", "community", "lifestyle"],
+                "icons": iconSizes.map(icon => ({
+                    "src": `/images/pwa/${icon.name}`,
+                    "sizes": `${icon.size}x${icon.size}`,
+                    "type": "image/png",
+                    "purpose": icon.size >= 192 ? "any maskable" : "any"
+                })),
+                "shortcuts": [
+                    {
+                        "name": "إضافة منشور جديد",
+                        "short_name": "منشور جديد",
+                        "description": "أضف منشور جديد بسرعة",
+                        "url": "/posts/create",
+                        "icons": [
+                            {
+                                "src": "/images/pwa/icon-192x192.png",
+                                "sizes": "192x192",
+                                "type": "image/png"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "البحث",
+                        "short_name": "البحث",
+                        "description": "البحث في المنشورات والمستخدمين",
+                        "url": "/?search=1",
+                        "icons": [
+                            {
+                                "src": "/images/pwa/icon-192x192.png",
+                                "sizes": "192x192",
+                                "type": "image/png"
+                            }
+                        ]
+                    }
+                ],
+                "related_applications": [],
+                "prefer_related_applications": false
+            };
+            
+            const dataStr = JSON.stringify(manifestContent, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.download = 'manifest.json';
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            URL.revokeObjectURL(url);
+            
+            document.getElementById('progress').innerHTML = `
+                <span class="success">✅ تم تحميل manifest.json المحدث!</span><br>
+                <small>استبدل الملف الحالي في مجلد public/</small>
+            `;
+        }
+        
+        // إضافة دعم roundRect للمتصفحات القديمة
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                this.beginPath();
+                this.moveTo(x + radius, y);
+                this.lineTo(x + width - radius, y);
+                this.quadraticCurveTo(x + width, y, x + width, y + radius);
+                this.lineTo(x + width, y + height - radius);
+                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                this.lineTo(x + radius, y + height);
+                this.quadraticCurveTo(x, y + height, x, y + height - radius);
+                this.lineTo(x, y + radius);
+                this.quadraticCurveTo(x, y, x + radius, y);
+                this.closePath();
+            };
+        }
+        
+        console.log('🎨 مولد أيقونات PNG جاهز!');
+    </script>
+</body>
+</html>

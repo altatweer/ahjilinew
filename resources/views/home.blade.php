@@ -24,15 +24,15 @@
     <link rel="manifest" href="/manifest.json">
     
     <!-- PWA Icons -->
-    <link rel="icon" type="image/svg+xml" sizes="16x16" href="/images/pwa/icon-16x16.svg">
-    <link rel="icon" type="image/svg+xml" sizes="32x32" href="/images/pwa/icon-32x32.svg">
-    <link rel="icon" type="image/svg+xml" sizes="192x192" href="/images/pwa/icon-192x192.svg">
-    <link rel="icon" type="image/svg+xml" sizes="512x512" href="/images/pwa/icon-512x512.svg">
-    <link rel="apple-touch-icon" href="/images/pwa/icon-192x192.svg">
-    <link rel="apple-touch-icon" sizes="152x152" href="/images/pwa/icon-152x152.svg">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/pwa/icon-180x180.svg">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/pwa/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/pwa/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/pwa/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/images/pwa/icon-512x512.png">
+    <link rel="apple-touch-icon" href="/images/pwa/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/pwa/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/pwa/icon-180x180.png">
     <!-- Fallback favicon -->
-    <link rel="shortcut icon" href="/images/pwa/icon-32x32.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="/images/pwa/favicon-32x32.png" type="image/png">
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="احجيلي - منصة التواصل العراقية">
