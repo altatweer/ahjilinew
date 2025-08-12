@@ -138,3 +138,8 @@ Route::post('/test-post', [App\Http\Controllers\TestController::class, 'createPo
 Route::get('/api-docs', function () {
     return response()->file(public_path('api-docs/index.html'));
 });
+
+// App Design Preview route
+Route::get('/app-design', function () {
+    return response()->file(public_path('api-docs/app-design.html'));
+});
