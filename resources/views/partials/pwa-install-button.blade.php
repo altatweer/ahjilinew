@@ -1,113 +1,106 @@
-<!-- زر التثبيت العائم - مكون مشترك -->
-<div id="pwa-install-floating-btn" class="pwa-install-floating" style="display: none;">
-    <button type="button" class="btn btn-success rounded-circle shadow-lg" onclick="handleFloatingInstall()" title="ثبت تطبيق احجيلي">
-        <i class="bi bi-download"></i>
-        <span class="install-text">ثبت</span>
-    </button>
+<!-- زر التثبيت الثابت في الأسفل -->
+<div id="pwa-install-floating-btn" class="pwa-install-bottom-bar" style="display: none;">
+    <div class="container-fluid">
+        <button type="button" class="btn btn-success w-100 shadow-lg" onclick="handleFloatingInstall()" title="ثبت تطبيق احجيلي للشاشة الرئيسية">
+            <i class="bi bi-download me-2"></i>
+            <span class="install-text">ثبت التطبيق على الشاشة الرئيسية</span>
+        </button>
+    </div>
 </div>
 
 <style>
-    .pwa-install-floating {
+    .pwa-install-bottom-bar {
         position: fixed;
-        bottom: 80px;
-        right: 20px;
+        bottom: 0;
+        left: 0;
+        right: 0;
         z-index: 1050;
-        animation: floatingBounce 2s ease-in-out infinite;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 10px 15px;
+        animation: slideUpIn 0.5s ease-out;
     }
 
-    .pwa-install-floating .btn {
-        width: 60px;
-        height: 60px;
+    .pwa-install-bottom-bar .btn {
+        height: 50px;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
         border: none;
         background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         transition: all 0.3s ease;
-        padding: 0;
+        border-radius: 12px;
     }
 
-    .pwa-install-floating .btn:hover {
-        transform: scale(1.1);
+    .pwa-install-bottom-bar .btn:hover {
+        transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4) !important;
         background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
     }
 
-    .pwa-install-floating .btn i {
+    .pwa-install-bottom-bar .btn i {
         font-size: 18px;
-        margin-bottom: 2px;
     }
 
-    .pwa-install-floating .install-text {
-        font-size: 10px;
+    .pwa-install-bottom-bar .install-text {
+        font-size: 16px;
         line-height: 1;
         color: white;
+        font-weight: 600;
     }
 
-    @keyframes floatingBounce {
-        0%, 20%, 50%, 80%, 100% {
+    @keyframes slideUpIn {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
             transform: translateY(0);
-        }
-        40% {
-            transform: translateY(-10px);
-        }
-        60% {
-            transform: translateY(-5px);
+            opacity: 1;
         }
     }
 
-    /* تعديل موضع الزر للشاشات الصغيرة */
+    /* تأكد من وجود padding في الأسفل للمحتوى */
+    body.has-install-bar {
+        padding-bottom: 80px !important;
+    }
+
+    /* تحسينات للشاشات الصغيرة */
     @media (max-width: 768px) {
-        .pwa-install-floating {
-            bottom: 90px;
-            right: 15px;
+        .pwa-install-bottom-bar {
+            padding: 8px 10px;
         }
         
-        .pwa-install-floating .btn {
-            width: 55px;
-            height: 55px;
+        .pwa-install-bottom-bar .btn {
+            height: 45px;
+            font-size: 14px;
         }
         
-        .pwa-install-floating .btn i {
-            font-size: 16px;
-        }
-        
-        .install-text {
-            font-size: 9px;
+        .pwa-install-bottom-bar .install-text {
+            font-size: 14px;
         }
     }
 
     /* إخفاء الزر عند وجود لوحة مفاتيح على الجوال */
     @media (max-height: 500px) {
-        .pwa-install-floating {
+        .pwa-install-bottom-bar {
             display: none !important;
         }
     }
 
-    /* تجنب تضارب مع زر إضافة منشور على اليسار */
-    .pwa-install-floating {
-        right: 20px; /* على اليمين دائماً */
-    }
-    
-    /* إذا كان هناك عناصر أخرى على اليمين، قم بتعديل الموضع */
-    @media (max-width: 576px) {
-        .pwa-install-floating {
-            right: 15px;
-            bottom: 85px; /* مساحة إضافية للجوال */
-        }
-    }
+
 </style>
 
 <script>
-    // إدارة زر التثبيت العائم المشترك
+    // إدارة زر التثبيت في الأسفل المشترك
     if (typeof window.pwaFloatingButtonManager === 'undefined') {
         window.pwaFloatingButtonManager = {
             floatingButtonShown: false,
             
-            // إظهار الزر العائم
+            // إظهار زر التثبيت في الأسفل
             showFloatingInstallButton: function() {
                 const floatingBtn = document.getElementById('pwa-install-floating-btn');
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -119,10 +112,11 @@
                     return;
                 }
                 
-                console.log('📱 إظهار زر التثبيت العائم');
+                console.log('📱 إظهار زر التثبيت في الأسفل');
                 
                 if (floatingBtn) {
                     floatingBtn.style.display = 'block';
+                    document.body.classList.add('has-install-bar');
                     this.floatingButtonShown = true;
                     
                     // تحديث النص والأيقونة حسب النظام
@@ -131,22 +125,23 @@
                     const textElement = btnElement.querySelector('.install-text');
                     
                     if (isIOS) {
-                        iconElement.className = 'bi bi-plus-square';
-                        textElement.textContent = 'ثبت';
+                        iconElement.className = 'bi bi-plus-square me-2';
+                        textElement.textContent = 'ثبت التطبيق على الشاشة الرئيسية';
                         btnElement.title = 'ثبت تطبيق احجيلي للشاشة الرئيسية';
                     } else {
-                        iconElement.className = 'bi bi-download';
-                        textElement.textContent = 'ثبت';
-                        btnElement.title = 'ثبت تطبيق احجيلي';
+                        iconElement.className = 'bi bi-download me-2';
+                        textElement.textContent = 'ثبت التطبيق على الشاشة الرئيسية';
+                        btnElement.title = 'ثبت تطبيق احجيلي للشاشة الرئيسية';
                     }
                 }
             },
             
-            // إخفاء الزر العائم
+            // إخفاء الزر السفلي
             hideFloatingInstallButton: function() {
                 const floatingBtn = document.getElementById('pwa-install-floating-btn');
                 if (floatingBtn) {
                     floatingBtn.style.display = 'none';
+                    document.body.classList.remove('has-install-bar');
                     this.floatingButtonShown = false;
                 }
             },
