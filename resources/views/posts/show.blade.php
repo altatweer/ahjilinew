@@ -574,13 +574,17 @@
                                 <form action="{{ route('comments.store.anonymous', $post) }}" method="POST">
                                     @csrf
                                     <div class="mb-3">
-                                        <label class="form-label">اسمك</label>
+                                        <label class="form-label">اسمك (اختياري)</label>
                                         <input type="text" 
                                                class="form-control" 
                                                name="anonymous_name" 
-                                               placeholder="اكتب اسمك (أو اتركه مجهول)" 
+                                               placeholder="اكتب اسمك أو اتركه فارغاً للبقاء مجهولاً تماماً" 
                                                value="{{ old('anonymous_name') }}"
                                                maxlength="50">
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle"></i>
+                                            هذا الحقل اختياري - يمكنك تركه فارغاً للبقاء مجهولاً
+                                        </div>
                                         @error('anonymous_name')
                                             <div class="text-danger small">{{ $message }}</div>
                                         @enderror

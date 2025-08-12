@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // تسجيل observer للتعليقات لتحديث العدادات تلقائياً
+        \App\Models\Comment::observe(\App\Observers\CommentObserver::class);
     }
 }

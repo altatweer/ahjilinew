@@ -57,7 +57,7 @@ class CommentController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|string|min:2|max:500',
-            'anonymous_name' => 'required|string|min:2|max:50',
+            'anonymous_name' => 'nullable|string|min:2|max:50',
         ]);
 
         // Extra spam checks for anonymous comments
