@@ -550,6 +550,53 @@
             gap: 4px;
         }
         
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .language-toggle button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* Language Content */
+        .lang-en {
+            display: none;
+        }
+        
+        .lang-ar {
+            display: block;
+        }
+        
+        body.lang-english .lang-en {
+            display: block;
+        }
+        
+        body.lang-english .lang-ar {
+            display: none;
+        }
+        
+        body.lang-english {
+            direction: ltr;
+        }
+        
+        body.lang-english .mobile-container {
+            direction: ltr;
+        }
+
         /* Top Controller */
         .top-controller {
             position: fixed;
@@ -643,13 +690,36 @@
     </style>
 </head>
 <body>
+    <!-- Language Toggle -->
+    <div class="language-toggle">
+        <button onclick="toggleLanguage()">
+            <span class="lang-ar">🇺🇸 EN</span>
+            <span class="lang-en">🇸🇦 عربي</span>
+        </button>
+    </div>
+
     <!-- Screen Controller -->
     <div class="top-controller">
-        <div class="controller-title">🎮 شاشات التطبيق</div>
-        <a href="#" class="screen-btn active" data-screen="home">🏠 الرئيسية</a>
-        <a href="#" class="screen-btn" data-screen="post-detail">📄 تفاصيل المنشور</a>
-        <a href="#" class="screen-btn" data-screen="create-post">✏️ إنشاء منشور</a>
-        <a href="#" class="screen-btn" data-screen="profile">👤 الملف الشخصي</a>
+        <div class="controller-title">
+            <span class="lang-ar">🎮 شاشات التطبيق</span>
+            <span class="lang-en">🎮 App Screens</span>
+        </div>
+        <a href="#" class="screen-btn active" data-screen="home">
+            <span class="lang-ar">🏠 الرئيسية</span>
+            <span class="lang-en">🏠 Home</span>
+        </a>
+        <a href="#" class="screen-btn" data-screen="post-detail">
+            <span class="lang-ar">📄 تفاصيل المنشور</span>
+            <span class="lang-en">📄 Post Detail</span>
+        </a>
+        <a href="#" class="screen-btn" data-screen="create-post">
+            <span class="lang-ar">✏️ إنشاء منشور</span>
+            <span class="lang-en">✏️ Create Post</span>
+        </a>
+        <a href="#" class="screen-btn" data-screen="profile">
+            <span class="lang-ar">👤 الملف الشخصي</span>
+            <span class="lang-en">👤 Profile</span>
+        </a>
     </div>
 
     <!-- Mobile App Container -->
@@ -658,16 +728,20 @@
         <div class="app-header">
             <div class="status-bar">
                 <span>9:41 AM</span>
-                <span>احجيلي</span>
+                <span class="lang-ar">احجيلي</span>
+                <span class="lang-en">Ahjili</span>
                 <span>🔋 100%</span>
             </div>
             <div class="app-title">
-                <h1>احجيلي</h1>
+                <h1>
+                    <span class="lang-ar">احجيلي</span>
+                    <span class="lang-en">Ahjili</span>
+                </h1>
                 <div class="header-actions">
-                    <button class="header-btn">
+                    <button class="header-btn" title="Search">
                         <i class="bi bi-search"></i>
                     </button>
-                    <button class="header-btn">
+                    <button class="header-btn" title="Notifications">
                         <i class="bi bi-bell"></i>
                     </button>
                 </div>
@@ -678,13 +752,34 @@
         <div class="screen active" id="home">
             <!-- Category Tabs -->
             <div class="category-tabs">
-                <a href="#" class="category-btn active">الكل</a>
-                <a href="#" class="category-btn">عامة</a>
-                <a href="#" class="category-btn">شكاوى</a>
-                <a href="#" class="category-btn">تجارب</a>
-                <a href="#" class="category-btn">توصيات</a>
-                <a href="#" class="category-btn">أسئلة</a>
-                <a href="#" class="category-btn">مراجعات</a>
+                <a href="#" class="category-btn active">
+                    <span class="lang-ar">الكل</span>
+                    <span class="lang-en">All</span>
+                </a>
+                <a href="#" class="category-btn">
+                    <span class="lang-ar">عامة</span>
+                    <span class="lang-en">General</span>
+                </a>
+                <a href="#" class="category-btn">
+                    <span class="lang-ar">شكاوى</span>
+                    <span class="lang-en">Complaints</span>
+                </a>
+                <a href="#" class="category-btn">
+                    <span class="lang-ar">تجارب</span>
+                    <span class="lang-en">Experiences</span>
+                </a>
+                <a href="#" class="category-btn">
+                    <span class="lang-ar">توصيات</span>
+                    <span class="lang-en">Recommendations</span>
+                </a>
+                <a href="#" class="category-btn">
+                    <span class="lang-ar">أسئلة</span>
+                    <span class="lang-en">Questions</span>
+                </a>
+                <a href="#" class="category-btn">
+                    <span class="lang-ar">مراجعات</span>
+                    <span class="lang-en">Reviews</span>
+                </a>
             </div>
 
             <!-- Posts Feed -->
@@ -693,21 +788,45 @@
                 <div class="post-card">
                     <div class="post-header">
                         <div class="user-info">
-                            <div class="user-avatar">م</div>
-                            <div class="user-details">
-                                <h6>محمد أحمد</h6>
-                                <small>منذ ساعتين • بغداد</small>
+                            <div class="user-avatar">
+                                <span class="lang-ar">م</span>
+                                <span class="lang-en">M</span>
                             </div>
-                            <div class="category-badge">شكوى</div>
+                            <div class="user-details">
+                                <h6>
+                                    <span class="lang-ar">محمد أحمد</span>
+                                    <span class="lang-en">Mohammed Ahmed</span>
+                                </h6>
+                                <small>
+                                    <span class="lang-ar">منذ ساعتين • بغداد</span>
+                                    <span class="lang-en">2 hours ago • Baghdad</span>
+                                </small>
+                            </div>
+                            <div class="category-badge">
+                                <span class="lang-ar">شكوى</span>
+                                <span class="lang-en">Complaint</span>
+                            </div>
                         </div>
                     </div>
                     <div class="post-content">
-                        <p class="post-text">مشكلة في انقطاع التيار الكهربائي في منطقة الكرادة لأكثر من 8 ساعات يومياً. هل يواجه أحد نفس المشكلة؟ وما هي الحلول المقترحة؟</p>
-                        <img src="https://via.placeholder.com/300x200/5C7D99/FFFFFF?text=صورة+المشكلة" alt="صورة المنشور" class="post-image">
+                        <p class="post-text">
+                            <span class="lang-ar">مشكلة في انقطاع التيار الكهربائي في منطقة الكرادة لأكثر من 8 ساعات يومياً. هل يواجه أحد نفس المشكلة؟ وما هي الحلول المقترحة؟</span>
+                            <span class="lang-en">Power outage problem in Al-Karada area for more than 8 hours daily. Is anyone facing the same issue? What are the suggested solutions?</span>
+                        </p>
+                        <img src="https://via.placeholder.com/300x200/5C7D99/FFFFFF?text=Problem+Image" alt="Post Image" class="post-image">
                         <div class="post-hashtags">
-                            <span class="hashtag">#مشكلة</span>
-                            <span class="hashtag">#كهرباء</span>
-                            <span class="hashtag">#بغداد</span>
+                            <span class="hashtag">
+                                <span class="lang-ar">#مشكلة</span>
+                                <span class="lang-en">#problem</span>
+                            </span>
+                            <span class="hashtag">
+                                <span class="lang-ar">#كهرباء</span>
+                                <span class="lang-en">#electricity</span>
+                            </span>
+                            <span class="hashtag">
+                                <span class="lang-ar">#بغداد</span>
+                                <span class="lang-en">#baghdad</span>
+                            </span>
                         </div>
                     </div>
                     <div class="post-actions">
@@ -733,20 +852,44 @@
                 <div class="post-card">
                     <div class="post-header">
                         <div class="user-info">
-                            <div class="user-avatar">ف</div>
-                            <div class="user-details">
-                                <h6>فاطمة علي</h6>
-                                <small>منذ 4 ساعات • النجف</small>
+                            <div class="user-avatar">
+                                <span class="lang-ar">ف</span>
+                                <span class="lang-en">F</span>
                             </div>
-                            <div class="category-badge" style="background: #28a745;">توصية</div>
+                            <div class="user-details">
+                                <h6>
+                                    <span class="lang-ar">فاطمة علي</span>
+                                    <span class="lang-en">Fatima Ali</span>
+                                </h6>
+                                <small>
+                                    <span class="lang-ar">منذ 4 ساعات • النجف</span>
+                                    <span class="lang-en">4 hours ago • Najaf</span>
+                                </small>
+                            </div>
+                            <div class="category-badge" style="background: #28a745;">
+                                <span class="lang-ar">توصية</span>
+                                <span class="lang-en">Recommendation</span>
+                            </div>
                         </div>
                     </div>
                     <div class="post-content">
-                        <p class="post-text">أنصح الجميع بزيارة مطعم الأصالة في منطقة العلوية. الطعم رائع والأسعار معقولة والخدمة ممتازة. جربت الدولمة والكباب العراقي وكانوا لذيذين جداً!</p>
+                        <p class="post-text">
+                            <span class="lang-ar">أنصح الجميع بزيارة مطعم الأصالة في منطقة العلوية. الطعم رائع والأسعار معقولة والخدمة ممتازة. جربت الدولمة والكباب العراقي وكانوا لذيذين جداً!</span>
+                            <span class="lang-en">I recommend everyone to visit Al-Asala Restaurant in Al-Alawiya area. The taste is amazing, prices are reasonable, and the service is excellent. I tried the dolma and Iraqi kebab and they were delicious!</span>
+                        </p>
                         <div class="post-hashtags">
-                            <span class="hashtag">#توصية</span>
-                            <span class="hashtag">#مطعم</span>
-                            <span class="hashtag">#طعام</span>
+                            <span class="hashtag">
+                                <span class="lang-ar">#توصية</span>
+                                <span class="lang-en">#recommendation</span>
+                            </span>
+                            <span class="hashtag">
+                                <span class="lang-ar">#مطعم</span>
+                                <span class="lang-en">#restaurant</span>
+                            </span>
+                            <span class="hashtag">
+                                <span class="lang-ar">#طعام</span>
+                                <span class="lang-en">#food</span>
+                            </span>
                         </div>
                     </div>
                     <div class="post-actions">
@@ -772,20 +915,44 @@
                 <div class="post-card">
                     <div class="post-header">
                         <div class="user-info">
-                            <div class="user-avatar">ع</div>
-                            <div class="user-details">
-                                <h6>علي حسن</h6>
-                                <small>منذ 6 ساعات • البصرة</small>
+                            <div class="user-avatar">
+                                <span class="lang-ar">ع</span>
+                                <span class="lang-en">A</span>
                             </div>
-                            <div class="category-badge" style="background: #17a2b8;">سؤال</div>
+                            <div class="user-details">
+                                <h6>
+                                    <span class="lang-ar">علي حسن</span>
+                                    <span class="lang-en">Ali Hassan</span>
+                                </h6>
+                                <small>
+                                    <span class="lang-ar">منذ 6 ساعات • البصرة</span>
+                                    <span class="lang-en">6 hours ago • Basra</span>
+                                </small>
+                            </div>
+                            <div class="category-badge" style="background: #17a2b8;">
+                                <span class="lang-ar">سؤال</span>
+                                <span class="lang-en">Question</span>
+                            </div>
                         </div>
                     </div>
                     <div class="post-content">
-                        <p class="post-text">هل يعرف أحد أفضل مراكز صيانة السيارات في البصرة؟ سيارتي تحتاج صيانة شاملة وأريد مكان موثوق ومعقول السعر.</p>
+                        <p class="post-text">
+                            <span class="lang-ar">هل يعرف أحد أفضل مراكز صيانة السيارات في البصرة؟ سيارتي تحتاج صيانة شاملة وأريد مكان موثوق ومعقول السعر.</span>
+                            <span class="lang-en">Does anyone know the best car maintenance centers in Basra? My car needs comprehensive maintenance and I want a reliable and reasonably priced place.</span>
+                        </p>
                         <div class="post-hashtags">
-                            <span class="hashtag">#سؤال</span>
-                            <span class="hashtag">#سيارات</span>
-                            <span class="hashtag">#صيانة</span>
+                            <span class="hashtag">
+                                <span class="lang-ar">#سؤال</span>
+                                <span class="lang-en">#question</span>
+                            </span>
+                            <span class="hashtag">
+                                <span class="lang-ar">#سيارات</span>
+                                <span class="lang-en">#cars</span>
+                            </span>
+                            <span class="hashtag">
+                                <span class="lang-ar">#صيانة</span>
+                                <span class="lang-en">#maintenance</span>
+                            </span>
                         </div>
                     </div>
                     <div class="post-actions">
@@ -854,47 +1021,95 @@
 
                 <!-- Comments Section -->
                 <div class="comments-section">
-                    <h6 class="comments-title">التعليقات (12)</h6>
+                    <h6 class="comments-title">
+                        <span class="lang-ar">التعليقات (12)</span>
+                        <span class="lang-en">Comments (12)</span>
+                    </h6>
                     
                     <!-- Comment 1 -->
                     <div class="comment-item">
                         <div class="comment-header">
-                            <div class="comment-avatar">س</div>
-                            <span class="comment-user">سارة محمد</span>
-                            <span class="comment-time">منذ ساعة</span>
+                            <div class="comment-avatar">
+                                <span class="lang-ar">س</span>
+                                <span class="lang-en">S</span>
+                            </div>
+                            <span class="comment-user">
+                                <span class="lang-ar">سارة محمد</span>
+                                <span class="lang-en">Sara Mohammed</span>
+                            </span>
+                            <span class="comment-time">
+                                <span class="lang-ar">منذ ساعة</span>
+                                <span class="lang-en">1 hour ago</span>
+                            </span>
                         </div>
-                        <p class="comment-text">نفس المشكلة عندنا في الكرادة الداخلية. اتصلت بالشركة وقالوا انه عطل في المحولة الكهربائية.</p>
+                        <p class="comment-text">
+                            <span class="lang-ar">نفس المشكلة عندنا في الكرادة الداخلية. اتصلت بالشركة وقالوا انه عطل في المحولة الكهربائية.</span>
+                            <span class="lang-en">Same problem in inner Karada. I called the company and they said there's a fault in the electrical transformer.</span>
+                        </p>
                         <div class="comment-actions">
                             <button><i class="bi bi-heart"></i> 5</button>
-                            <button><i class="bi bi-reply"></i> رد</button>
+                            <button><i class="bi bi-reply"></i> 
+                                <span class="lang-ar">رد</span>
+                                <span class="lang-en">Reply</span>
+                            </button>
                         </div>
                     </div>
 
                     <!-- Comment 2 -->
                     <div class="comment-item">
                         <div class="comment-header">
-                            <div class="comment-avatar">أ</div>
-                            <span class="comment-user">أحمد علي</span>
-                            <span class="comment-time">منذ 30 دقيقة</span>
+                            <div class="comment-avatar">
+                                <span class="lang-ar">أ</span>
+                                <span class="lang-en">A</span>
+                            </div>
+                            <span class="comment-user">
+                                <span class="lang-ar">أحمد علي</span>
+                                <span class="lang-en">Ahmed Ali</span>
+                            </span>
+                            <span class="comment-time">
+                                <span class="lang-ar">منذ 30 دقيقة</span>
+                                <span class="lang-en">30 minutes ago</span>
+                            </span>
                         </div>
-                        <p class="comment-text">اقترح عليك تكوين مجموعة مع الجيران للتواصل مع الشركة بصورة جماعية. هذا أكثر فعالية.</p>
+                        <p class="comment-text">
+                            <span class="lang-ar">اقترح عليك تكوين مجموعة مع الجيران للتواصل مع الشركة بصورة جماعية. هذا أكثر فعالية.</span>
+                            <span class="lang-en">I suggest forming a group with neighbors to contact the company collectively. This is more effective.</span>
+                        </p>
                         <div class="comment-actions">
                             <button><i class="bi bi-heart"></i> 8</button>
-                            <button><i class="bi bi-reply"></i> رد</button>
+                            <button><i class="bi bi-reply"></i> 
+                                <span class="lang-ar">رد</span>
+                                <span class="lang-en">Reply</span>
+                            </button>
                         </div>
                     </div>
 
                     <!-- Comment 3 -->
                     <div class="comment-item">
                         <div class="comment-header">
-                            <div class="comment-avatar">م</div>
-                            <span class="comment-user">مجهول</span>
-                            <span class="comment-time">منذ 15 دقيقة</span>
+                            <div class="comment-avatar">
+                                <span class="lang-ar">م</span>
+                                <span class="lang-en">A</span>
+                            </div>
+                            <span class="comment-user">
+                                <span class="lang-ar">مجهول</span>
+                                <span class="lang-en">Anonymous</span>
+                            </span>
+                            <span class="comment-time">
+                                <span class="lang-ar">منذ 15 دقيقة</span>
+                                <span class="lang-en">15 minutes ago</span>
+                            </span>
                         </div>
-                        <p class="comment-text">عندي نفس المشكلة بالضبط! ممكن نتواصل لحل هذا الموضوع سوية؟</p>
+                        <p class="comment-text">
+                            <span class="lang-ar">عندي نفس المشكلة بالضبط! ممكن نتواصل لحل هذا الموضوع سوية؟</span>
+                            <span class="lang-en">I have exactly the same problem! Can we communicate to solve this issue together?</span>
+                        </p>
                         <div class="comment-actions">
                             <button><i class="bi bi-heart"></i> 3</button>
-                            <button><i class="bi bi-reply"></i> رد</button>
+                            <button><i class="bi bi-reply"></i> 
+                                <span class="lang-ar">رد</span>
+                                <span class="lang-en">Reply</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -905,44 +1120,82 @@
         <div class="screen" id="create-post">
             <div class="create-form">
                 <div class="form-group">
-                    <label class="form-label">محتوى المنشور</label>
-                    <textarea class="form-control" placeholder="شارك مشكلتك أو تجربتك مع المجتمع..."></textarea>
+                    <label class="form-label">
+                        <span class="lang-ar">محتوى المنشور</span>
+                        <span class="lang-en">Post Content</span>
+                    </label>
+                    <textarea class="form-control" id="post-content-textarea" placeholder="شارك مشكلتك أو تجربتك مع المجتمع..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">الفئة</label>
+                    <label class="form-label">
+                        <span class="lang-ar">الفئة</span>
+                        <span class="lang-en">Category</span>
+                    </label>
                     <select class="form-control form-select">
-                        <option>اختر الفئة</option>
-                        <option>شكوى</option>
-                        <option>تجربة</option>
-                        <option>توصية</option>
-                        <option>سؤال</option>
-                        <option>مراجعة</option>
-                        <option>عامة</option>
+                        <option class="lang-ar">اختر الفئة</option>
+                        <option class="lang-en" style="display:none;">Select Category</option>
+                        <option>
+                            <span class="lang-ar">شكوى</span>
+                            <span class="lang-en">Complaint</span>
+                        </option>
+                        <option>
+                            <span class="lang-ar">تجربة</span>
+                            <span class="lang-en">Experience</span>
+                        </option>
+                        <option>
+                            <span class="lang-ar">توصية</span>
+                            <span class="lang-en">Recommendation</span>
+                        </option>
+                        <option>
+                            <span class="lang-ar">سؤال</span>
+                            <span class="lang-en">Question</span>
+                        </option>
+                        <option>
+                            <span class="lang-ar">مراجعة</span>
+                            <span class="lang-en">Review</span>
+                        </option>
+                        <option>
+                            <span class="lang-ar">عامة</span>
+                            <span class="lang-en">General</span>
+                        </option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">الموقع</label>
-                    <input type="text" class="form-control" placeholder="المدينة أو المنطقة">
+                    <label class="form-label">
+                        <span class="lang-ar">الموقع</span>
+                        <span class="lang-en">Location</span>
+                    </label>
+                    <input type="text" class="form-control" id="location-input" placeholder="المدينة أو المنطقة">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">الهاشتاغ</label>
-                    <input type="text" class="form-control" placeholder="مثال: مشكلة، حل، تجربة">
+                    <label class="form-label">
+                        <span class="lang-ar">الهاشتاغ</span>
+                        <span class="lang-en">Hashtags</span>
+                    </label>
+                    <input type="text" class="form-control" id="hashtags-input" placeholder="مثال: مشكلة، حل، تجربة">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">إرفاق صورة</label>
+                    <label class="form-label">
+                        <span class="lang-ar">إرفاق صورة</span>
+                        <span class="lang-en">Attach Image</span>
+                    </label>
                     <div style="border: 2px dashed #ddd; padding: 30px; text-align: center; border-radius: 12px; margin-bottom: 20px;">
                         <i class="bi bi-camera" style="font-size: 24px; color: #999; margin-bottom: 8px;"></i>
-                        <p style="margin: 0; color: #666;">اضغط لاختيار صورة</p>
+                        <p style="margin: 0; color: #666;">
+                            <span class="lang-ar">اضغط لاختيار صورة</span>
+                            <span class="lang-en">Click to select image</span>
+                        </p>
                     </div>
                 </div>
 
                 <button class="btn-primary">
                     <i class="bi bi-send"></i>
-                    نشر المحتوى
+                    <span class="lang-ar">نشر المحتوى</span>
+                    <span class="lang-en">Publish Post</span>
                 </button>
             </div>
         </div>
@@ -950,24 +1203,42 @@
         <!-- Profile Screen -->
         <div class="screen" id="profile">
             <div class="profile-header">
-                <div class="profile-avatar">م</div>
+                <div class="profile-avatar">
+                    <span class="lang-ar">م</span>
+                    <span class="lang-en">M</span>
+                </div>
                 <div class="profile-info">
-                    <h3>محمد أحمد الطائي</h3>
+                    <h3>
+                        <span class="lang-ar">محمد أحمد الطائي</span>
+                        <span class="lang-en">Mohammed Ahmed Al-Taie</span>
+                    </h3>
                     <p>@mohammed_ahmed</p>
-                    <p>مطور برمجيات من بغداد، أحب مساعدة المجتمع</p>
+                    <p>
+                        <span class="lang-ar">مطور برمجيات من بغداد، أحب مساعدة المجتمع</span>
+                        <span class="lang-en">Software developer from Baghdad, loves helping the community</span>
+                    </p>
                 </div>
                 <div class="profile-stats">
                     <div class="stat-item">
                         <span class="stat-number">23</span>
-                        <span class="stat-label">منشور</span>
+                        <span class="stat-label">
+                            <span class="lang-ar">منشور</span>
+                            <span class="lang-en">Posts</span>
+                        </span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-number">156</span>
-                        <span class="stat-label">إعجاب</span>
+                        <span class="stat-label">
+                            <span class="lang-ar">إعجاب</span>
+                            <span class="lang-en">Likes</span>
+                        </span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-number">89</span>
-                        <span class="stat-label">تعليق</span>
+                        <span class="stat-label">
+                            <span class="lang-ar">تعليق</span>
+                            <span class="lang-en">Comments</span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -975,35 +1246,59 @@
             <div class="profile-menu">
                 <a href="#" class="menu-item">
                     <i class="bi bi-person"></i>
-                    <span>تعديل الملف الشخصي</span>
+                    <span>
+                        <span class="lang-ar">تعديل الملف الشخصي</span>
+                        <span class="lang-en">Edit Profile</span>
+                    </span>
                 </a>
                 <a href="#" class="menu-item">
                     <i class="bi bi-file-text"></i>
-                    <span>منشوراتي</span>
+                    <span>
+                        <span class="lang-ar">منشوراتي</span>
+                        <span class="lang-en">My Posts</span>
+                    </span>
                 </a>
                 <a href="#" class="menu-item">
                     <i class="bi bi-bookmark"></i>
-                    <span>المحفوظات</span>
+                    <span>
+                        <span class="lang-ar">المحفوظات</span>
+                        <span class="lang-en">Bookmarks</span>
+                    </span>
                 </a>
                 <a href="#" class="menu-item">
                     <i class="bi bi-bell"></i>
-                    <span>الإشعارات</span>
+                    <span>
+                        <span class="lang-ar">الإشعارات</span>
+                        <span class="lang-en">Notifications</span>
+                    </span>
                 </a>
                 <a href="#" class="menu-item">
                     <i class="bi bi-gear"></i>
-                    <span>الإعدادات</span>
+                    <span>
+                        <span class="lang-ar">الإعدادات</span>
+                        <span class="lang-en">Settings</span>
+                    </span>
                 </a>
                 <a href="#" class="menu-item">
                     <i class="bi bi-question-circle"></i>
-                    <span>المساعدة</span>
+                    <span>
+                        <span class="lang-ar">المساعدة</span>
+                        <span class="lang-en">Help</span>
+                    </span>
                 </a>
                 <a href="#" class="menu-item">
                     <i class="bi bi-info-circle"></i>
-                    <span>حول التطبيق</span>
+                    <span>
+                        <span class="lang-ar">حول التطبيق</span>
+                        <span class="lang-en">About App</span>
+                    </span>
                 </a>
                 <a href="#" class="menu-item" style="color: #dc3545;">
                     <i class="bi bi-box-arrow-right"></i>
-                    <span>تسجيل الخروج</span>
+                    <span>
+                        <span class="lang-ar">تسجيل الخروج</span>
+                        <span class="lang-en">Logout</span>
+                    </span>
                 </a>
             </div>
         </div>
@@ -1012,19 +1307,23 @@
         <div class="bottom-nav">
             <a href="#" class="nav-item active" data-nav="home">
                 <i class="bi bi-house-fill"></i>
-                <span>الرئيسية</span>
+                <span class="lang-ar">الرئيسية</span>
+                <span class="lang-en">Home</span>
             </a>
             <a href="#" class="nav-item" data-nav="search">
                 <i class="bi bi-search"></i>
-                <span>البحث</span>
+                <span class="lang-ar">البحث</span>
+                <span class="lang-en">Search</span>
             </a>
             <a href="#" class="nav-item" data-nav="notifications">
                 <i class="bi bi-bell"></i>
-                <span>الإشعارات</span>
+                <span class="lang-ar">الإشعارات</span>
+                <span class="lang-en">Notifications</span>
             </a>
             <a href="#" class="nav-item" data-nav="profile">
                 <i class="bi bi-person"></i>
-                <span>الملف الشخصي</span>
+                <span class="lang-ar">الملف الشخصي</span>
+                <span class="lang-en">Profile</span>
             </a>
         </div>
 
@@ -1173,9 +1472,64 @@
             });
         });
 
+        // Language Toggle Function
+        function toggleLanguage() {
+            const body = document.body;
+            const isEnglish = body.classList.contains('lang-english');
+            
+            if (isEnglish) {
+                body.classList.remove('lang-english');
+                body.setAttribute('dir', 'rtl');
+                localStorage.setItem('app-design-language', 'ar');
+                updatePlaceholders('ar');
+            } else {
+                body.classList.add('lang-english');
+                body.setAttribute('dir', 'ltr');
+                localStorage.setItem('app-design-language', 'en');
+                updatePlaceholders('en');
+            }
+            
+            console.log('🌐 Language switched to:', isEnglish ? 'Arabic' : 'English');
+        }
+        
+        // Update form placeholders based on language
+        function updatePlaceholders(lang) {
+            const textarea = document.getElementById('post-content-textarea');
+            const locationInput = document.getElementById('location-input');
+            const hashtagInput = document.getElementById('hashtags-input');
+            
+            if (textarea) {
+                textarea.placeholder = lang === 'ar' 
+                    ? 'شارك مشكلتك أو تجربتك مع المجتمع...'
+                    : 'Share your problem or experience with the community...';
+            }
+            
+            if (locationInput) {
+                locationInput.placeholder = lang === 'ar' 
+                    ? 'المدينة أو المنطقة'
+                    : 'City or Area';
+            }
+            
+            if (hashtagInput) {
+                hashtagInput.placeholder = lang === 'ar' 
+                    ? 'مثال: مشكلة، حل، تجربة'
+                    : 'Example: problem, solution, experience';
+            }
+        }
+        
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             console.log('📱 Ahjili App Design Loaded Successfully!');
+            
+            // Load saved language preference
+            const savedLang = localStorage.getItem('app-design-language');
+            if (savedLang === 'en') {
+                document.body.classList.add('lang-english');
+                document.body.setAttribute('dir', 'ltr');
+                updatePlaceholders('en');
+            } else {
+                updatePlaceholders('ar');
+            }
             
             // Add some interactive feedback
             document.addEventListener('click', function(e) {
